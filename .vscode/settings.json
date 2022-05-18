@@ -1,0 +1,9 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Program Files\\Java\\javafx-sdk-17.0.1/**/*.jar"
+    ],
+    "java.codeGeneration.generateComments": true,
+    "xml.java.home": "",
+    "java.jdt.ls.java.home": ""
+}

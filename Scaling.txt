@@ -1,0 +1,17 @@
+For closer police car:
+width: 347px
+height 148px
+
+Further Police car:
+Width: 246px
+height 106px
+
+
+Taxi Further:
+264
+148
+
+
+Taxi Closer:
+384
+216
