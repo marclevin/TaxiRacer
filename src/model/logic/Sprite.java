@@ -6,35 +6,30 @@ import model.utility.BoundBox;
 public abstract class Sprite
 {
     protected int x,y;
-    protected int xSpeed,ySpeed;
     protected BoundBox myBound;
-    protected Image myImage;
-    protected ImageView myImageView;
+    protected Image myImage = null;
+    protected ImageView myImageView =null;
     public Sprite(int x, int y)
     {
         this.x = x;
         this.y = y;
-        myBound = new BoundBox(0,0,0,0);
         myImageView = new ImageView();
+        myBound = new BoundBox(0, 0, x, y);
+        myBound.setX(x);
+        myBound.setY(y);
     };
+
+    public Sprite(int x, int y, Image image)
+    {
+        this(x,y);
+        setImage(image);
+    }
 
     public void setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
-
-    public void setSpeed(int xSpeed, int ySpeed)
-    {
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-    };
-
-    public void changeSpeed(int xSpeed, int ySpeed)
-    {
-        this.xSpeed += xSpeed;
-        this.ySpeed += ySpeed;
-    };
 
     public boolean intersects(Sprite other)
     {
@@ -57,8 +52,6 @@ public abstract class Sprite
 
     public BoundBox getBoundary()
     {
-        myBound.setX(x);
-        myBound.setY(y);
         return myBound;
     }
     public int getX()
@@ -72,6 +65,10 @@ public abstract class Sprite
     public void setX(int x)
     {
         this.x = x;
+    }
+    public void setY(int y)
+    {
+        this.y = y;
     }
 
 

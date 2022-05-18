@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.display.GameCanvas;
 import model.logic.Settings;
-import model.utility.InputImg;
+import model.utility.InputHandler;
 
 public class Main extends Application {
 
@@ -21,9 +21,10 @@ public class Main extends Application {
         
         root.getChildren().add(cv);
         Scene scene = new Scene(root, Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
-        scene.setOnKeyPressed(InputImg::processKeyPress);
+        scene.setOnKeyPressed(InputHandler::processKeyPress);
         
         stg.setScene(scene);
+        cv.runAnimator();
         stg.show();
         
 

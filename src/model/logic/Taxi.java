@@ -1,5 +1,6 @@
 package model.logic;
 
+import javafx.scene.image.Image;
 import model.utility.Acceptor;
 import model.utility.Visitor;
 
@@ -20,9 +21,9 @@ public class Taxi extends Sprite implements Acceptor
         this.myImageView.setFitWidth(350);
     }
 
-    public Taxi()
+    public Taxi(int x, int y, Image image)
     {
-        super(0,0);
+        super(x, y, image);
     }
 
     @Override

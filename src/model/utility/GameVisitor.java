@@ -5,6 +5,7 @@ import model.logic.Taxi;
 
 public class GameVisitor implements Visitor
 {
+    // This class will be used to help us save game objects by visiting them
     public GameVisitor()
     {
     }
@@ -20,5 +21,6 @@ public class GameVisitor implements Visitor
         // TODO Auto-generated method stub
         
     }
+
 
 }

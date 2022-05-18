@@ -1,6 +1,10 @@
 package model.logic;
 
-public class Road extends Sprite {
+import javafx.scene.image.Image;
+import model.utility.Acceptor;
+import model.utility.Visitor;
+
+public class Road extends Sprite implements Acceptor {
 
     /**
      * 
@@ -11,6 +15,16 @@ public class Road extends Sprite {
      */
     public Road(int x, int y) {
         super(x, y);
+    }
+    public Road(int x, int y, Image image)
+    {
+        super(x, y, image);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        // TODO Auto-generated method stub
+        
     }
 
     
