@@ -8,6 +8,7 @@ public enum EPositions {
     SECOND_LANE(350,260,120),
     THIRD_LANE(380,350,150),
     FOURTH_LANE(420,470,180);
+    
     private final int location;
     private final int width_scale;
     private final int height_scale;

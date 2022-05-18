@@ -14,6 +14,8 @@ public class Taxi extends Sprite implements Acceptor
      * @param width Width of the taxi
      * @param height Height of the taxi
      */
+    private boolean isPrime = true;
+    private Image primeImage, secondImage = null;
     public Taxi(int x, int y) {
         super(x, y);
         this.myImageView.setPreserveRatio(true);
@@ -21,15 +23,30 @@ public class Taxi extends Sprite implements Acceptor
         this.myImageView.setFitWidth(350);
     }
 
-    public Taxi(int x, int y, Image image)
+    public Taxi(int x, int y, Image prime, Image secondary)
     {
-        super(x, y, image);
+        super(x, y, prime);
+        this.primeImage = prime;
+        this.secondImage = secondary;
     }
 
     @Override
     public void accept(Visitor visitor) {
         // TODO: Add something here lol
         
+    }
+
+    public void swapImage()
+    {
+        if (isPrime)
+        {
+            this.setImage(secondImage);
+            isPrime = false;
+        } else
+        {
+            this.setImage(primeImage);
+            isPrime = true;
+        }
     }
 
     

@@ -2,39 +2,39 @@ package model.utility;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import model.logic.Sprite;
+import model.logic.Taxi;
 
 public final class InputHandler {
 
-    private static Sprite mainSprite = null;
-    private static ImageView spriteImage = null;
+    private static Taxi mainTaxi = null;
+    private static ImageView taxiImageView = null;
     private static EPositions position = EPositions.SECOND_LANE; // By Default we will start in the second lane.
     private static int positionMarker = 2;
     private InputHandler(){};
 
 
-    public static void setSprite(Sprite s)
+    public static void setTaxi(Taxi s)
     {
         try 
         {
-            mainSprite = s;
-            spriteImage = mainSprite.getMyImageView();
+            mainTaxi = s;
+            taxiImageView = mainTaxi.getMyImageView();
         }
         catch(Exception e)
         {
             System.out.println("Error: " + e.getMessage());
         }
-        spriteImage.setPreserveRatio(true);
+        taxiImageView.setPreserveRatio(true);
     }
 
-    public static Sprite getMainSprite()
+    public static Taxi getMainTaxi()
     {
-        return mainSprite;
+        return mainTaxi;
     }
 
     public static void processKeyPress(KeyEvent event)
     {
-        if (spriteImage == null)
+        if (taxiImageView == null)
             return;
 
         switch (event.getCode())
@@ -44,9 +44,9 @@ public final class InputHandler {
                 {
                     positionMarker--;
                     position = EPositions.values()[positionMarker];
-                    mainSprite.setY(position.getLocation());
-                    spriteImage.setFitWidth(position.getWidthScale());
-                    spriteImage.setFitHeight(position.getHeightScale());
+                    mainTaxi.setY(position.getLocation());
+                    taxiImageView.setFitWidth(position.getWidthScale());
+                    taxiImageView.setFitHeight(position.getHeightScale());
                 }
                 break;
             case DOWN:
@@ -54,18 +54,18 @@ public final class InputHandler {
             {
                 positionMarker++;
                 position = EPositions.values()[positionMarker];
-                mainSprite.setY(position.getLocation());
-                spriteImage.setFitWidth(position.getWidthScale());
-                spriteImage.setFitHeight(position.getHeightScale());
+                mainTaxi.setY(position.getLocation());
+                taxiImageView.setFitWidth(position.getWidthScale());
+                taxiImageView.setFitHeight(position.getHeightScale());
             }
                 break;
 
             case LEFT:
-                mainSprite.setX(mainSprite.getX() - 15);
+                mainTaxi.setX(mainTaxi.getX() - 15);
                 break;
 
             case RIGHT:
-                mainSprite.setX(mainSprite.getX() + 15);
+                mainTaxi.setX(mainTaxi.getX() + 15);
                 break;
             default:
                 break;  // do nothing, like a chad

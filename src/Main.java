@@ -26,6 +26,7 @@ public class Main extends Application {
         stg.setScene(scene);
         cv.runAnimator();
         stg.show();
+
         
 
 

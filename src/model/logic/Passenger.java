@@ -1,12 +1,13 @@
 package model.logic;
 
+import javafx.scene.image.Image;
 import model.utility.Acceptor;
 import model.utility.Visitor;
 
 public class Passenger extends Sprite implements Acceptor {
 
-    public Passenger(int x, int y, double width, double height) {
-        super(x, y);
+    public Passenger(int x, int y, Image image) {
+        super(x, y,image);
     }
 
     @Override
