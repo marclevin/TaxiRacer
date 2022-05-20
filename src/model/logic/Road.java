@@ -13,9 +13,7 @@ public class Road extends Sprite implements Acceptor {
      * @param width Width of the road
      * @param height Height of the road
      */
-    public Road(int x, int y) {
-        super(x, y);
-    }
+   
     public Road(int x, int y, Image image)
     {
         super(x, y, image);

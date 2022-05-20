@@ -2,6 +2,7 @@ package model.logic;
 
 import javafx.scene.image.Image;
 import model.utility.Acceptor;
+import model.utility.EPositions;
 import model.utility.Visitor;
 
 public class Taxi extends Sprite implements Acceptor
@@ -16,18 +17,18 @@ public class Taxi extends Sprite implements Acceptor
      */
     private boolean isPrime = true;
     private Image primeImage, secondImage = null;
-    public Taxi(int x, int y) {
-        super(x, y);
-        this.myImageView.setPreserveRatio(true);
-        this.myImageView.setFitHeight(150);
-        this.myImageView.setFitWidth(350);
-    }
+    private int slowDownPenalty = 120;
 
     public Taxi(int x, int y, Image prime, Image secondary)
     {
         super(x, y, prime);
         this.primeImage = prime;
         this.secondImage = secondary;
+    }
+
+    public int getSlowDown()
+    {
+        return slowDownPenalty;
     }
 
     @Override
@@ -47,6 +48,16 @@ public class Taxi extends Sprite implements Acceptor
             this.setImage(primeImage);
             isPrime = true;
         }
+    }
+
+    public void scale(EPositions position)
+    {
+        this.setY(position.getLocation());
+        this.myImageView.setFitWidth(position.getWidthScale());
+        this.myImageView.setFitHeight(position.getHeightScale());
+        this.myBound.setWidth(position.getWidthScale() / 2.5);
+        this.myBound.setHeight(position.getHeightScale() / 2.5);
+
     }
 
     

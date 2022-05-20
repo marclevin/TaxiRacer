@@ -1,6 +1,8 @@
 package model.logic;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import model.utility.BoundBox;
 
 public abstract class Sprite
@@ -9,21 +11,18 @@ public abstract class Sprite
     protected BoundBox myBound;
     protected Image myImage = null;
     protected ImageView myImageView =null;
-    public Sprite(int x, int y)
+    private SnapshotParameters param = null;
+    public Sprite(int x, int y, Image image)
     {
         this.x = x;
         this.y = y;
         myImageView = new ImageView();
+        setImage(image);
+        param = new SnapshotParameters();
+        param.setFill(Color.TRANSPARENT);
         myBound = new BoundBox(0, 0, x, y);
-        myBound.setX(x);
-        myBound.setY(y);
     };
 
-    public Sprite(int x, int y, Image image)
-    {
-        this(x,y);
-        setImage(image);
-    }
 
     public void setPosition(int x, int y)
     {
@@ -41,8 +40,8 @@ public abstract class Sprite
     {
         myImage = image;
         myImageView.setImage(myImage);
-        myBound.setWidth(image.getWidth());
-        myBound.setHeight(image.getHeight());
+        myImageView.setPreserveRatio(true);
+        
     }
 
     public ImageView getMyImageView()
@@ -65,10 +64,12 @@ public abstract class Sprite
     public void setX(int x)
     {
         this.x = x;
+        this.myBound.setX(x+(int)this.myImageView.snapshot(param, null).getWidth() / 3);
     }
     public void setY(int y)
     {
         this.y = y;
+        this.myBound.setY(y+(int)this.myImageView.snapshot(param, null).getHeight() / 3);
     }
 
 

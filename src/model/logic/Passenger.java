@@ -8,6 +8,8 @@ public class Passenger extends Sprite implements Acceptor {
 
     public Passenger(int x, int y, Image image) {
         super(x, y,image);
+        myBound.setHeight(image.getHeight());
+        myBound.setWidth(image.getWidth());
     }
 
     @Override

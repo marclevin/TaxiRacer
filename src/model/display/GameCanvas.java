@@ -44,22 +44,17 @@ public class GameCanvas extends Canvas {
 
     private ArrayList<Sprite> load_fresh_sprites() {
         // Image loading.
-        Image road_image = load_image(".\\road_try.png");
-        Image road_piece_image = load_image(".\\road_piece.png");
-        Image taxi_prime = load_image(".\\taxi_move_1.png");
-        Image taxi_second = load_image(".\\taxi_move_2.png");
-        Image passenger_image = load_image(".\\passenger.png");
+        Image road_image = load_image("img\\road_try.png");
+        Image road_piece_image = load_image("img\\road_piece.png");
+        Image taxi_prime = load_image("img\\taxi_move_1.png");
+        Image taxi_second = load_image("img\\taxi_move_2.png");
+        Image passenger_image = load_image("img\\passenger.png");
         ArrayList<Sprite> loadedSprites = new ArrayList<Sprite>();
-       loadedSprites.add(new Road(Settings.PRIMARY_ROAD_X, Settings.ROAD_Y, road_image));
-        loadedSprites.add(new Road(Settings.SECONDARY_ROAD_X, Settings.ROAD_Y, road_image));
+        loadedSprites.add(new Road(Settings.PRIMARY_ROAD_X, Settings.ROAD_Y, road_image));
+        loadedSprites.add(new Road(Settings.SECONDARY_ROAD_X-19, Settings.ROAD_Y, road_image));
         loadedSprites.add(new Road(Settings.SECONDARY_ROAD_PIECE_X, Settings.ROAD_Y, road_piece_image));
+        loadedSprites.add(new Road(Settings.PRIME_ROAD_PIECE_X-8, Settings.ROAD_Y, road_piece_image));
 
-        // Far Passenger, Close Passenger, Far Sign, Close Sign.
-
-        // Special Cases
-        Road prime_road_piece = new Road(Settings.PRIME_ROAD_PIECE_X, Settings.ROAD_Y, road_piece_image);
-        prime_road_piece.getMyImageView().setFitWidth(Settings.piece_modifier);
-        loadedSprites.add(prime_road_piece);
 
         Taxi taxi = new Taxi(0,Settings.TAXI_INIT_Y, taxi_prime,taxi_second);
         // By default we will start in lane 3.
@@ -68,7 +63,10 @@ public class GameCanvas extends Canvas {
         taxi.getMyImageView().setFitHeight(position.getHeightScale());
         InputHandler.setTaxi(taxi);
         loadedSprites.add(taxi);
-        loadedSprites.add(new Passenger(0,525,passenger_image));
+
+        
+        loadedSprites.add(new Passenger(0,540,passenger_image));
+        loadedSprites.add(new Passenger(0, 300, passenger_image));
         return loadedSprites;
         }
             
