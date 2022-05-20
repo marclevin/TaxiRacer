@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import model.logic.InputHandler;
 import model.logic.Passenger;
 import model.logic.Road;
-import model.logic.Settings;
 import model.logic.Sprite;
 import model.logic.Taxi;
 import model.utility.EPositions;
-import model.utility.InputHandler;
+import model.utility.ESettings;
 
 public class GameCanvas extends Canvas {
     private GraphicsContext gc = null;
@@ -21,7 +21,7 @@ public class GameCanvas extends Canvas {
     private AnimationHandler handler = null;
 
     public GameCanvas() {
-        this(Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
+        this(ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
     // could do loading logic here.
@@ -50,22 +50,17 @@ public class GameCanvas extends Canvas {
         Image taxi_second = load_image("img\\taxi_move_2.png");
         Image passenger_image = load_image("img\\passenger.png");
         ArrayList<Sprite> loadedSprites = new ArrayList<Sprite>();
-        loadedSprites.add(new Road(Settings.PRIMARY_ROAD_X, Settings.ROAD_Y, road_image));
-        loadedSprites.add(new Road(Settings.SECONDARY_ROAD_X-19, Settings.ROAD_Y, road_image));
-        loadedSprites.add(new Road(Settings.SECONDARY_ROAD_PIECE_X, Settings.ROAD_Y, road_piece_image));
-        loadedSprites.add(new Road(Settings.PRIME_ROAD_PIECE_X-8, Settings.ROAD_Y, road_piece_image));
+        loadedSprites.add(new Road(ESettings.PRIMARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal(), road_image));
+        loadedSprites.add(new Road(ESettings.SECONDARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal(), road_image));
+        loadedSprites.add(new Road(ESettings.SECONDARY_ROAD_PIECE_X.getVal(), ESettings.ROAD_Y.getVal(), road_piece_image));
+        loadedSprites.add(new Road(ESettings.PRIME_ROAD_PIECE_X.getVal(), ESettings.ROAD_Y.getVal(), road_piece_image));
 
-
-        Taxi taxi = new Taxi(0,Settings.TAXI_INIT_Y, taxi_prime,taxi_second);
-        // By default we will start in lane 3.
-        EPositions position = EPositions.values()[2];
-        taxi.getMyImageView().setFitWidth(position.getWidthScale());
-        taxi.getMyImageView().setFitHeight(position.getHeightScale());
+        // Maybe add a start anim here.
+        Taxi taxi = new Taxi(0,ESettings.TAXI_INIT_Y.getVal(), taxi_prime,taxi_second);
+        taxi.scale(EPositions.values()[2]);
         InputHandler.setTaxi(taxi);
-        loadedSprites.add(taxi);
-
         
-        loadedSprites.add(new Passenger(0,540,passenger_image));
+        loadedSprites.add(new Passenger(0,ESettings.PASSENGER_BOTTOM_Y.getVal(),passenger_image));
         loadedSprites.add(new Passenger(0, 300, passenger_image));
         return loadedSprites;
         }

@@ -1,7 +1,4 @@
-package model.utility;
-
-import model.logic.Passenger;
-import model.logic.Taxi;
+package model.logic;
 
 public interface Visitor {
     public void visit(Taxi taxi);

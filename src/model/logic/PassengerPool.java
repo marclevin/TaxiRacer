@@ -1,8 +1,6 @@
-package model.utility;
+package model.logic;
 
 import java.util.ArrayList;
-
-import model.logic.Passenger;
 
 public class PassengerPool {
     private static PassengerPool instance = null;

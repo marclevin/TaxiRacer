@@ -1,7 +1,7 @@
-package model.utility;
+package model.logic;
 
 import javafx.scene.input.KeyEvent;
-import model.logic.Taxi;
+import model.utility.EPositions;
 
 public final class InputHandler {
 

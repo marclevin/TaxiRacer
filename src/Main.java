@@ -4,8 +4,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.display.GameCanvas;
-import model.logic.Settings;
-import model.utility.InputHandler;
+import model.logic.InputHandler;
+import model.utility.ESettings;
 
 public class Main extends Application {
 
@@ -17,10 +17,10 @@ public class Main extends Application {
     @Override
     public void start(Stage stg) throws Exception {
         Group root = new Group();
-        GameCanvas cv = new GameCanvas(Settings.SCENE_WIDTH,Settings.SCENE_HEIGHT);
+        GameCanvas cv = new GameCanvas(ESettings.SCENE_WIDTH.getVal(),ESettings.SCENE_HEIGHT.getVal());
         
         root.getChildren().add(cv);
-        Scene scene = new Scene(root, Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
+        Scene scene = new Scene(root, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
         scene.setOnKeyPressed(InputHandler::processKeyPress);
         
         stg.setScene(scene);

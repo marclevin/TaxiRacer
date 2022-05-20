@@ -1,4 +1,4 @@
-package model.utility;
+package model.logic;
 
 public class BoundBox {
     private double width, height;

@@ -1,9 +1,7 @@
 package model.logic;
 
 import javafx.scene.image.Image;
-import model.utility.Acceptor;
 import model.utility.EPositions;
-import model.utility.Visitor;
 
 public class Taxi extends Sprite implements Acceptor
 {

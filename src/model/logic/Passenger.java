@@ -1,8 +1,6 @@
 package model.logic;
 
 import javafx.scene.image.Image;
-import model.utility.Acceptor;
-import model.utility.Visitor;
 
 public class Passenger extends Sprite implements Acceptor {
 

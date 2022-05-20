@@ -1,8 +1,6 @@
 package model.logic;
 
 import javafx.scene.image.Image;
-import model.utility.Acceptor;
-import model.utility.Visitor;
 
 public class Road extends Sprite implements Acceptor {
 
