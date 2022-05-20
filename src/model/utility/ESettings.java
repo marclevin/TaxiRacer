@@ -8,8 +8,7 @@ public enum ESettings {
      SECONDARY_ROAD_PIECE_X(1840),
      SECONDARY_ROAD_X(936),
      SCENE_WIDTH(1080),
-     TAXI_INIT_Y(390),
-     PASSENGER_BOTTOM_Y(540);
+     TAXI_INIT_Y(390);
 
     private final int internal_value;
     ESettings(int val)
@@ -17,7 +16,7 @@ public enum ESettings {
     internal_value = val;
     }
 
-    public int getVal()
+    public final int getVal()
     {
         return this.internal_value;
     }

@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import model.logic.InputHandler;
 import model.logic.Passenger;
+import model.logic.PassengerPool;
 import model.logic.Road;
 import model.logic.Sprite;
 import model.logic.Taxi;
@@ -59,9 +60,7 @@ public class GameCanvas extends Canvas {
         Taxi taxi = new Taxi(0,ESettings.TAXI_INIT_Y.getVal(), taxi_prime,taxi_second);
         taxi.scale(EPositions.values()[2]);
         InputHandler.setTaxi(taxi);
-        
-        loadedSprites.add(new Passenger(0,ESettings.PASSENGER_BOTTOM_Y.getVal(),passenger_image));
-        loadedSprites.add(new Passenger(0, 300, passenger_image));
+        PassengerPool.setPassengerImage(passenger_image);
         return loadedSprites;
         }
             
