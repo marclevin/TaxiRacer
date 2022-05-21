@@ -29,6 +29,11 @@ public class Taxi extends Sprite implements Acceptor
         return slowDownPenalty;
     }
 
+    public void foo()
+    {
+        
+    }
+
     @Override
     public void accept(Visitor visitor) {
         // TODO: Add something here lol

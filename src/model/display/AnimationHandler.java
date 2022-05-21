@@ -68,7 +68,7 @@ public class AnimationHandler extends AnimationTimer {
             passengerPool.releasePassenger(p);
         }
         cleanup_list.clear();
-        if (frame_count % 60 == 0 && passenger_count < 10) {
+        if (frame_count == 60 && passenger_count < 10) {
            sprites.add(passengerPool.aquirePassenger());
            passenger_count++;
         }
@@ -82,13 +82,12 @@ public class AnimationHandler extends AnimationTimer {
             pickup_slowdown += 1;
         } else {
             pickup_slowdown = 0;
-            speedAdjust = -5;
+            speedAdjust = -15;
             pickup_flag = false;
         }
 
-        if (buffer == 8) {
+        if (frame_count % 8 == 0) {
             taxi.swapImage();
-            buffer = 0;
         }
         // Sprite drawing and animation
 
@@ -98,11 +97,12 @@ public class AnimationHandler extends AnimationTimer {
             sprite.setX((int) Math.ceil(sprite.getX() + speedAdjust));
             gc.drawImage(getInstanceImage(sprite), sprite.getX(), sprite.getY());
             gc.setFill(Color.RED);
-            gc.fillRect(sprite.getBoundary().getX(), sprite.getBoundary().getY(), sprite.getBoundary().getWidth(), sprite.getBoundary().getHeight());
 
             // Handle Taxi touching passenger here.
             if (sprite instanceof Passenger) { // Smelly code
                 Passenger passenger = (Passenger) sprite;
+
+
 
                 if (taxi.intersects(passenger)) {
                     if (InputHandler.pickupAttempted()) {
@@ -124,6 +124,10 @@ public class AnimationHandler extends AnimationTimer {
             }
         }
         gc.drawImage(getInstanceImage(taxi), taxi.getX(), taxi.getY());
-
+        
+        if (frame_count == 60)
+        {
+            frame_count = 0;
+        }
     }
 }

@@ -32,7 +32,7 @@ public class Passenger extends Sprite implements Acceptor {
         if (info == EPassenger.PASSENGER_BOTTOM)
         {
            this.myBound.setHeight(100);
-           this.myBound.setY(this.myBound.getY() - 10);
+           this.myBound.setY(this.myBound.getY() - 40);
         }
     }
 

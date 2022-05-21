@@ -44,6 +44,7 @@ public class PassengerPool {
 
     public void releasePassenger(Passenger p) {
         if (p != null) {
+            p.setX(rand.nextInt(-1080, 1081));
             passengers.add(p);
         }
     }

@@ -1,8 +1,5 @@
 package model.utility;
-
-/**
- * Lane positions, these correspond to Y values to switch to.
- */
+// TODO: Clean up Enum remove width.
 public enum EPositions {
     FIRST_LANE(330,200,100),
     SECOND_LANE(350,260,120),
@@ -30,5 +27,4 @@ public enum EPositions {
     {
         return this.height_scale;
     }
-
 }

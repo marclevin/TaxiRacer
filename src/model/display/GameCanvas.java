@@ -8,7 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import model.logic.InputHandler;
-import model.logic.Passenger;
 import model.logic.PassengerPool;
 import model.logic.Road;
 import model.logic.Sprite;
