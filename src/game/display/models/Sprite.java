@@ -1,4 +1,4 @@
-package model.logic;
+package game.display.models;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -63,12 +63,12 @@ public abstract class Sprite
     public void setX(int x)
     {
         this.x = x;
-        this.myBound.setX(x+(int)this.myImageView.snapshot(param, null).getWidth() / 3);
+        this.myBound.setX(x);
     }
     public void setY(int y)
     {
         this.y = y;
-        this.myBound.setY(y+(int)this.myImageView.snapshot(param, null).getHeight() / 3);
+        this.myBound.setY(y);
     }
 
 

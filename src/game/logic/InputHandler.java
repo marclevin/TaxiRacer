@@ -1,11 +1,14 @@
-package model.logic;
+package game.logic;
 
+import game.display.models.Police;
+import game.display.models.Taxi;
+import game.utility.EPositions;
 import javafx.scene.input.KeyEvent;
-import model.utility.EPositions;
 
 public final class InputHandler {
 
     private static Taxi taxi = null;
+    private static Police police = null;
     private static EPositions position = EPositions.SECOND_LANE; // By Default we will start in the second lane.
     private static int positionMarker = 2;
     private InputHandler(){};
@@ -32,11 +35,20 @@ public final class InputHandler {
     {
         return taxi;
     }
+    public static void setPolice(Police p)
+    {
+        police = p;
+    }
+    public static Police getPolice()
+    {
+        return police;
+    }
 
     public static void processKeyPress(KeyEvent event)
     {
             if (taxi == null)
             return;
+        attemptedPickup = false;
         switch (event.getCode())
         {
             case UP:
@@ -45,6 +57,7 @@ public final class InputHandler {
                     positionMarker--;
                     position = EPositions.values()[positionMarker];
                     taxi.scale(position);
+                    police.scale(position);
                     
                 }
                 break;
@@ -54,6 +67,7 @@ public final class InputHandler {
                 positionMarker++;
                 position = EPositions.values()[positionMarker];
                 taxi.scale(position);
+                police.scale(position);
             }
                 break;
 

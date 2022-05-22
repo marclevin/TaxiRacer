@@ -1,5 +1,7 @@
-package model.logic;
+package game.display.models;
 
+import game.logic.Acceptor;
+import game.logic.Visitor;
 import javafx.scene.image.Image;
 
 public class Road extends Sprite implements Acceptor {
@@ -22,6 +24,7 @@ public class Road extends Sprite implements Acceptor {
         // TODO Auto-generated method stub
         
     }
+
 
     
 }

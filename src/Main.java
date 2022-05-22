@@ -1,11 +1,11 @@
 
+import game.display.view.GameCanvas;
+import game.logic.InputHandler;
+import game.utility.ESettings;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import model.display.GameCanvas;
-import model.logic.InputHandler;
-import model.utility.ESettings;
 
 public class Main extends Application {
 

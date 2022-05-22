@@ -1,4 +1,4 @@
-package model.utility;
+package game.utility;
 
 public enum EPassenger {
     PASSENGER_BOTTOM( 0, 540),

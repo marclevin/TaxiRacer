@@ -1,4 +1,4 @@
-package model.logic;
+package game.display.models;
 
 public class Pothole {
     

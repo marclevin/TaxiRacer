@@ -1,7 +1,9 @@
-package model.logic;
+package game.display.models;
 
+import game.logic.Acceptor;
+import game.logic.Visitor;
+import game.utility.EPositions;
 import javafx.scene.image.Image;
-import model.utility.EPositions;
 
 public class Taxi extends Sprite implements Acceptor
 {
@@ -13,6 +15,7 @@ public class Taxi extends Sprite implements Acceptor
      * @param width Width of the taxi
      * @param height Height of the taxi
      */
+    private double wallet = 0;
     private boolean isPrime = true;
     private Image primeImage, secondImage = null;
     private int slowDownPenalty = 120;
@@ -34,6 +37,16 @@ public class Taxi extends Sprite implements Acceptor
         
     }
 
+
+    public void addCash(double cash)
+    {
+        wallet+= cash;
+    }
+
+    public double getWallet()
+    {
+        return this.wallet;
+    }
     @Override
     public void accept(Visitor visitor) {
         // TODO: Add something here lol
@@ -58,8 +71,8 @@ public class Taxi extends Sprite implements Acceptor
         this.setY(position.getLocation());
         this.myImageView.setFitWidth(position.getWidthScale());
         this.myImageView.setFitHeight(position.getHeightScale());
-        this.myBound.setWidth(position.getWidthScale() / 2.5);
-        this.myBound.setHeight(position.getHeightScale() / 2.5);
+        this.myBound.setWidth(position.getWidthScale() / 2);
+        this.myBound.setHeight(position.getHeightScale() / 2);
 
     }
 

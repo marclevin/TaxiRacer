@@ -1,4 +1,7 @@
-package model.logic;
+package game.logic;
+
+import game.display.models.Passenger;
+import game.display.models.Taxi;
 
 public class GameVisitor implements Visitor
 {

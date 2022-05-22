@@ -1,10 +1,11 @@
-package model.utility;
+package game.utility;
 // TODO: Clean up Enum remove width.
 public enum EPositions {
     FIRST_LANE(330,200,100),
     SECOND_LANE(350,260,120),
     THIRD_LANE(380,350,150),
-    FOURTH_LANE(420,470,180);
+    FOURTH_LANE(420,470,180),
+    POLICE_DISPLAY(105,100,50);
     
     private final int location;
     private final int width_scale;

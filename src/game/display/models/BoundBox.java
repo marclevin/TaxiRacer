@@ -1,4 +1,4 @@
-package model.logic;
+package game.display.models;
 
 public class BoundBox {
     private double width, height;
@@ -28,6 +28,16 @@ public class BoundBox {
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public void setX(double x)
+    {
+       this.x = (int)x;
+    }
+
+    public void setY(double y)
+    {
+        this.y = (int)y;
     }
 
     public void setY(int y) {

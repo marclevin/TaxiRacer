@@ -1,4 +1,4 @@
-package model.logic;
+package game.logic;
 
 public interface Acceptor {
     public void accept(Visitor visitor);
