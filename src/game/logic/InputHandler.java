@@ -5,11 +5,15 @@ import game.display.models.Taxi;
 import game.display.view.GameCanvas;
 import game.utility.EPolicePositions;
 import game.utility.ETaxiPositions;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
 public final class InputHandler {
 
     private static Taxi taxi = null;
+    private static Stage mainStage = null;
+    private static Scene upgradeScene = null;
     private static Police police = null;
     private static Boolean game_state = true;
     private static GameCanvas gameCanvas = null;
@@ -19,9 +23,19 @@ public final class InputHandler {
     private static boolean attemptedPickup = false;
 
 
+
     public static void pickupBlock()
     {
         attemptedPickup = false;
+    }
+
+    public static void setMainStage(Stage stage)
+    {
+        mainStage = stage;
+    }
+    public static void setUpgradeScene(Scene scene)
+    {
+        upgradeScene = scene;
     }
 
     public static boolean pickupAttempted()
@@ -45,6 +59,10 @@ public final class InputHandler {
         game_state = false;
     }
 
+    public static void begunGame()
+    {
+        game_state = true;
+    }
 
     public static Taxi getTaxi()
     {
@@ -108,6 +126,17 @@ public final class InputHandler {
                 if (!game_state)
                 {
                 gameCanvas.stopAnimator();
+                
+                game_state = true;
+                mainStage.setScene(upgradeScene);
+                }
+                break;
+            case ESCAPE:
+                if (game_state)
+                {
+                    gameCanvas.stopAnimator();
+                    game_state = true;
+                    mainStage.setScene(upgradeScene);
                 }
                 break;
             default:

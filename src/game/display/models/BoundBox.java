@@ -1,6 +1,8 @@
 package game.display.models;
 
-public class BoundBox {
+import java.io.Serializable;
+
+public class BoundBox implements Serializable {
     private double width, height;
     private int x, y;
 
@@ -10,6 +12,11 @@ public class BoundBox {
         this.x = x;
         this.y = y;
     };
+
+    public BoundBox()
+    {
+        this(0, 0, 0, 0);
+    }
 
     public boolean intersects(BoundBox other) {
         return (this.x < other.getX() + other.getWidth() &&

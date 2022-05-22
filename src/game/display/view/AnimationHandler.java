@@ -11,6 +11,7 @@ import game.logic.PassengerPool;
 import game.utility.EPassenger;
 import game.utility.EPolicePositions;
 import game.utility.ESettings;
+import game.utility.ETaxiPositions;
 import javafx.animation.AnimationTimer;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
@@ -65,9 +66,26 @@ public class AnimationHandler extends AnimationTimer {
         gc.drawImage(getInstanceImage(s), s.getX(), s.getY());
     }
 
+    public void resetGame()
+    {
+        stop_game = false;
+        pickup_count = 0;
+        pickup_slowdown = 0;
+        pickup_flag = false;
+        passenger_count = 0;
+        frame_count = 0;
+        warning_buffer = 0;
+        cleanup_list.clear();
+        bottom_render_list.clear();
+        police.resetDistance();
+        taxi.scale(ETaxiPositions.values()[2]);
+        taxi.setX(0);
+        InputHandler.begunGame();
+        
+    }
+
     public boolean isRunning()
     {
-        System.out.println(!this.stop_game);
         return !this.stop_game;
     }
 
@@ -136,7 +154,7 @@ public class AnimationHandler extends AnimationTimer {
     private void checkPassengerIntersection(Sprite sprite) {
         if (sprite instanceof Passenger) { // Smelly code
             Passenger passenger = (Passenger) sprite;
-            if (taxi.intersects(passenger) || police.intersects(passenger)) {
+            if (taxi.intersects(passenger)) {
                 if (passenger.getEPassenger() == EPassenger.PASSENGER_BOTTOM) {
                     bottom_render_list.add(passenger);
                 }
@@ -163,7 +181,7 @@ public class AnimationHandler extends AnimationTimer {
         if (stop_game)
         {
             // Lose conditions go here.
-            gc.setFont(new Font("Verdana", 80));
+            gc.setFont(new Font("Verdana", 40));
             gc.setFill(Color.BLACK);
             gc.fillText("You lost!\n Please press ENTER to continue...", ESettings.SCENE_WIDTH.getVal() / 2, ESettings.SCENE_HEIGHT.getVal() / 2);
             InputHandler.lostGame();

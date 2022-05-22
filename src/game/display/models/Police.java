@@ -24,6 +24,10 @@ public class Police extends Sprite {
         return (this.distance < 0);
     }
 
+    public void resetDistance()
+    {
+        this.distance = -1080;
+    }
     public void changeDistance(int distance)
     {
         this.distance+=distance;

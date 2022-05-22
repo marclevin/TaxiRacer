@@ -1,16 +1,19 @@
 package game.display.models;
+
+import java.io.Serializable;
+
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-public abstract class Sprite
+public abstract class Sprite implements Serializable
 {
-    protected int x,y;
+    protected transient int x,y;
     protected BoundBox myBound;
-    protected Image myImage = null;
-    protected ImageView myImageView =null;
-    private SnapshotParameters param = null;
+    protected transient Image myImage = null;
+    protected transient ImageView myImageView =null;
+    private transient SnapshotParameters param = null;
     public Sprite(int x, int y, Image image)
     {
         this.x = x;
@@ -21,6 +24,11 @@ public abstract class Sprite
         param.setFill(Color.TRANSPARENT);
         myBound = new BoundBox(0, 0, x, y);
     };
+
+    public Sprite()
+    {
+        this(0, 0, null);
+    }
 
 
     public void setPosition(int x, int y)

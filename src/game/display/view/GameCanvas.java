@@ -20,28 +20,25 @@ public class GameCanvas extends Canvas {
     private GraphicsContext gc = null;
     private ArrayList<Sprite> sprites = null;
     private AnimationHandler handler = null;
+    private Taxi taxi= null;
 
     public GameCanvas() {
         this(ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
-    public Boolean GameRunning()
-    {
-        return handler.isRunning();
-    }
     // could do loading logic here.
     public GameCanvas(double width, double height) {
         super(width, height);
         gc = this.getGraphicsContext2D();
-        sprites = load_fresh_sprites();
-        handler = new AnimationHandler(gc, sprites);
+        
     };
 
-
-    public void runNewGame()
+    public void initCanvas()
     {
-        runAnimator();
+        sprites = load_fresh_sprites();
+        handler = new AnimationHandler(gc, sprites);
     }
+
 
 
     public void runAnimator() {
@@ -50,10 +47,13 @@ public class GameCanvas extends Canvas {
 
     public void stopAnimator() {
         handler.stop();
+        handler.resetGame();
         gc.clearRect(0, 0, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
-        
     }
-
+    public boolean isGameRunning()
+    {
+        return handler.isRunning();
+    }
    
 
     private ArrayList<Sprite> load_fresh_sprites() {
@@ -71,8 +71,11 @@ public class GameCanvas extends Canvas {
         loadedSprites.add(new Road(ESettings.SECONDARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal(), road_image));
 
         // Maybe add a start anim here.
-        Taxi taxi = new Taxi(0,ESettings.TAXI_INIT_Y.getVal(), taxi_prime,taxi_second);
-        Police police = new Police(-1000, ESettings.TAXI_INIT_Y.getVal(), police_prime,police_second);
+        if (InputHandler.getTaxi() != null)
+        {
+            taxi.setImageSet(taxi_prime, taxi_second);
+        } else {  taxi = new Taxi(0,ESettings.TAXI_INIT_Y.getVal(), taxi_prime,taxi_second);}
+        Police police = new Police(-ESettings.SCENE_WIDTH.getVal(), ESettings.TAXI_INIT_Y.getVal(), police_prime,police_second);
         taxi.scale(ETaxiPositions.values()[2]);
         InputHandler.setTaxi(taxi);
         InputHandler.setPolice(police);

@@ -1,5 +1,6 @@
 package game.display.models;
 
+
 import game.logic.Acceptor;
 import game.logic.Visitor;
 import game.utility.ETaxiPositions;
@@ -16,14 +17,28 @@ public class Taxi extends Sprite implements Acceptor
      * @param height Height of the taxi
      */
     private double wallet = 0;
-    private boolean isPrime = true;
-    private Image primeImage, secondImage = null;
+    private int career_passengers = 0;
+    private transient boolean isPrime = true;
+    private transient Image primeImage, secondImage = null;
     private int slowDownPenalty = 120;
-    private ETaxiPositions myPosition = null;
+    private transient ETaxiPositions myPosition = null;
+
+
 
     public Taxi(int x, int y, Image prime, Image secondary)
     {
         super(x, y, prime);
+        this.primeImage = prime;
+        this.secondImage = secondary;
+    }
+
+    public Taxi()
+    {
+        super(0, 0, null);
+    }
+
+    public void setImageSet(Image prime, Image secondary)
+    {
         this.primeImage = prime;
         this.secondImage = secondary;
     }
@@ -42,6 +57,12 @@ public class Taxi extends Sprite implements Acceptor
     public void addCash(double cash)
     {
         wallet+= cash;
+        career_passengers++;
+    }
+
+    public int getCareerPassengers()
+    {
+        return this.career_passengers;
     }
 
     public double getWallet()
