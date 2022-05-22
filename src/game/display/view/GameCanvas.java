@@ -10,7 +10,7 @@ import game.display.models.Sprite;
 import game.display.models.Taxi;
 import game.logic.InputHandler;
 import game.logic.PassengerPool;
-import game.utility.EPositions;
+import game.utility.ETaxiPositions;
 import game.utility.ESettings;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -25,6 +25,10 @@ public class GameCanvas extends Canvas {
         this(ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
+    public Boolean GameRunning()
+    {
+        return handler.isRunning();
+    }
     // could do loading logic here.
     public GameCanvas(double width, double height) {
         super(width, height);
@@ -33,12 +37,21 @@ public class GameCanvas extends Canvas {
         handler = new AnimationHandler(gc, sprites);
     };
 
+
+    public void runNewGame()
+    {
+        runAnimator();
+    }
+
+
     public void runAnimator() {
         handler.start();
     }
 
     public void stopAnimator() {
         handler.stop();
+        gc.clearRect(0, 0, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
+        
     }
 
    
@@ -60,8 +73,7 @@ public class GameCanvas extends Canvas {
         // Maybe add a start anim here.
         Taxi taxi = new Taxi(0,ESettings.TAXI_INIT_Y.getVal(), taxi_prime,taxi_second);
         Police police = new Police(-1000, ESettings.TAXI_INIT_Y.getVal(), police_prime,police_second);
-        taxi.scale(EPositions.values()[2]);
-        police.scale(EPositions.values()[2]);
+        taxi.scale(ETaxiPositions.values()[2]);
         InputHandler.setTaxi(taxi);
         InputHandler.setPolice(police);
         PassengerPool.setPassengerImage(passenger_image);

@@ -1,6 +1,6 @@
 package game.display.models;
 
-import game.utility.EPositions;
+import game.utility.EPolicePositions;
 import javafx.scene.image.Image;
 
 public class Police extends Sprite {
@@ -34,13 +34,14 @@ public class Police extends Sprite {
     }
     
 
-    public void scale(EPositions position)
+    public void scale(EPolicePositions position)
     {
         this.setY(position.getLocation());
+        // By having the police move back a bit when they scale, we can make it easier for the player.
+        if (!this.isHidden()) {this.setX(this.getX() - 25);}
         this.myImageView.setFitWidth(position.getWidthScale());
-        this.myImageView.setFitHeight(position.getHeightScale());
-        this.myBound.setWidth(position.getWidthScale() / 2);
-        this.myBound.setHeight(position.getHeightScale() / 2);
+        this.myBound.setWidth(this.myImageView.getFitWidth());
+        this.myBound.setHeight(this.myImageView.getFitWidth() * 0.5);
 
     }
 

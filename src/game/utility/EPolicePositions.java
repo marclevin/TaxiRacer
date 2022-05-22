@@ -1,16 +1,15 @@
 package game.utility;
-// TODO: Clean up Enum remove width.
-public enum EPositions {
-    FIRST_LANE(330,200,100),
-    SECOND_LANE(350,260,120),
-    THIRD_LANE(380,350,150),
-    FOURTH_LANE(420,470,180),
+public enum EPolicePositions {
+    FIRST_LANE_POLICE(350,150,0),
+    SECOND_LANE_POLICE(375,185,0),
+    THIRD_LANE_POLICE(410,220,0),
+    FOURTH_LANE_POLICE(460,255,0),
     POLICE_DISPLAY(105,100,50);
     
     private final int location;
     private final int width_scale;
     private final int height_scale;
-    EPositions(int y, int x, int z)
+    EPolicePositions(int y, int x, int z)
     {
         this.location = y;
         this.width_scale = x;

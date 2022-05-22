@@ -6,11 +6,10 @@ import game.display.models.Passenger;
 import game.display.models.Police;
 import game.display.models.Sprite;
 import game.display.models.Taxi;
-import game.display.models.TempText;
 import game.logic.InputHandler;
 import game.logic.PassengerPool;
 import game.utility.EPassenger;
-import game.utility.EPositions;
+import game.utility.EPolicePositions;
 import game.utility.ESettings;
 import javafx.animation.AnimationTimer;
 import javafx.scene.SnapshotParameters;
@@ -37,8 +36,9 @@ public class AnimationHandler extends AnimationTimer {
     private int pickup_count = 0;
     private int warning_buffer = 0;
 
+    private boolean stop_game = false;
+
     private ArrayList<Passenger> bottom_render_list = null;
-    private ArrayList<TempText> text_hang = null;
     private Font common_font = new Font("Verdana", 20);
     private Font warning_font = new Font("Verdana", 40);
 
@@ -53,7 +53,6 @@ public class AnimationHandler extends AnimationTimer {
         passengerPool = PassengerPool.getInstance();
         cleanup_list = new ArrayList<Passenger>();
         bottom_render_list = new ArrayList<Passenger>();
-        text_hang = new ArrayList<TempText>();
     };
 
     private void cleanPage() {
@@ -66,6 +65,18 @@ public class AnimationHandler extends AnimationTimer {
         gc.drawImage(getInstanceImage(s), s.getX(), s.getY());
     }
 
+    public boolean isRunning()
+    {
+        System.out.println(!this.stop_game);
+        return !this.stop_game;
+    }
+
+    private void render_boundBox(Sprite s)
+    {
+        gc.setFill(Color.BLACK);
+        gc.fillRect(s.getBoundary().getX(), s.getBoundary().getY(), s.getBoundary().getWidth(), s.getBoundary().getHeight());
+    }
+
     private void render_scoreboard() {
         Color flashColor = null;
         int currentDistance = police.getDistance();
@@ -76,26 +87,25 @@ public class AnimationHandler extends AnimationTimer {
         gc.fillText(String.format("Wallet: R%.2f", taxi.getWallet()), 10, 40);
         gc.setFill(Color.DARKRED);
         gc.fillText(String.format("Passengers: %d", pickup_count), 10, 60);
-
-        if (frame_count < 30) {
-            flashColor = Color.RED;
-        } else {
-            flashColor = Color.BLUE;
-        }
-        gc.setFill(Color.BLACK);
-        gc.fillRect(10, 90, 120, 80);
-        gc.setFill(flashColor);
-        gc.fillRect(15, 95, 110, 70);
-        gc.fillText(String.format("Police Distance: %dM", -police.getDistance()), 10, 80);
         if (police.isHidden()) {
+            if (frame_count < 30) {
+                flashColor = Color.RED;
+            } else {
+                flashColor = Color.BLUE;
+            }
+            gc.setFill(Color.BLACK);
+            gc.fillRect(10, 90, 120, 80);
+            gc.setFill(flashColor);
+            gc.fillRect(15, 95, 110, 70);
+            gc.fillText(String.format("Police Distance: %dM", -police.getDistance()), 10, 80);
             police.setX(20);
-            police.scale(EPositions.POLICE_DISPLAY);
+            police.scale(EPolicePositions.POLICE_DISPLAY);
             render_sprite(police);
-            if (currentDistance > -200) {
+            if (currentDistance > -500) {
                 warning_buffer++;
                 if (warning_buffer < 300) {
                     gc.setFont(warning_font);
-                    gc.fillText("The police are less than 200M away!\nSPEED UP!", 150, 120);
+                    gc.fillText(String.format("The police are less than %dM away!\nSPEED UP!",-currentDistance), 150, 120);
                 } else {
                     warning_buffer = 0;
                 }
@@ -145,8 +155,19 @@ public class AnimationHandler extends AnimationTimer {
     @Override
     public void handle(long now) {
         // Local variable setup.
+        
+        
         cleanPage();
         cleanPassenger();
+
+        if (stop_game)
+        {
+            // Lose conditions go here.
+            gc.setFont(new Font("Verdana", 80));
+            gc.setFill(Color.BLACK);
+            gc.fillText("You lost!\n Please press ENTER to continue...", ESettings.SCENE_WIDTH.getVal() / 2, ESettings.SCENE_HEIGHT.getVal() / 2);
+            InputHandler.lostGame();
+        } else {
         render_scoreboard();
         frame_count++;
 
@@ -185,6 +206,29 @@ public class AnimationHandler extends AnimationTimer {
             }
         }
         render_sprite(taxi);
+        if (!police.isHidden())
+        {
+            police.setX(police.getDistance()-300);
+            render_sprite(police);
+        }
+        // Taxi out of bounds
+        if (taxi.getX() >= ESettings.SCENE_WIDTH.getVal()-80)
+        {
+            taxi.setX(ESettings.SCENE_WIDTH.getVal()-80);
+        }
+
+        if (taxi.getX() <= -140)
+        {
+            taxi.setX(-140);
+        }
+
+        if (taxi.intersects(police))
+        {
+            // LOSE CONDITION
+            stop_game = true;
+        }
+
+
 
         for (Passenger p : bottom_render_list) {
             render_sprite(p);
@@ -221,4 +265,5 @@ public class AnimationHandler extends AnimationTimer {
         }
 
     }
+}
 }

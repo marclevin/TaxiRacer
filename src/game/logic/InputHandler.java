@@ -2,15 +2,19 @@ package game.logic;
 
 import game.display.models.Police;
 import game.display.models.Taxi;
-import game.utility.EPositions;
+import game.display.view.GameCanvas;
+import game.utility.EPolicePositions;
+import game.utility.ETaxiPositions;
 import javafx.scene.input.KeyEvent;
 
 public final class InputHandler {
 
     private static Taxi taxi = null;
     private static Police police = null;
-    private static EPositions position = EPositions.SECOND_LANE; // By Default we will start in the second lane.
-    private static int positionMarker = 2;
+    private static Boolean game_state = true;
+    private static GameCanvas gameCanvas = null;
+    private static ETaxiPositions taxi_position = ETaxiPositions.SECOND_LANE_TAXI;
+    private static int marker = 2;
     private InputHandler(){};
     private static boolean attemptedPickup = false;
 
@@ -31,6 +35,17 @@ public final class InputHandler {
             taxi = s;
     }
 
+    public static void setCanvas(GameCanvas g)
+    {
+        gameCanvas = g;
+    }
+
+    public static void lostGame()
+    {
+        game_state = false;
+    }
+
+
     public static Taxi getTaxi()
     {
         return taxi;
@@ -48,29 +63,36 @@ public final class InputHandler {
     {
             if (taxi == null)
             return;
+            if (police == null)
+            return;
         attemptedPickup = false;
         switch (event.getCode())
         {
             case UP:
-                if (positionMarker > 0)
+                if (marker > 0)
                 {
-                    positionMarker--;
-                    position = EPositions.values()[positionMarker];
-                    taxi.scale(position);
-                    police.scale(position);
+                    marker--;
+                    taxi_position = ETaxiPositions.values()[marker];
+                    taxi.scale(taxi_position);
+                    if (!police.isHidden())
+                    {
+                        police.scale(EPolicePositions.values()[marker]);
+                    }
                     
                 }
                 break;
             case DOWN:
-            if (positionMarker < 3)
+            if (marker < 3)
             {
-                positionMarker++;
-                position = EPositions.values()[positionMarker];
-                taxi.scale(position);
-                police.scale(position);
+                marker++;
+                taxi_position = ETaxiPositions.values()[marker];
+                taxi.scale(taxi_position);
+                if (!police.isHidden())
+                {
+                    police.scale(EPolicePositions.values()[marker]);
+                }
             }
                 break;
-
             case LEFT:
                 taxi.setX(taxi.getX() - 15);
                 break;
@@ -81,6 +103,12 @@ public final class InputHandler {
 
             case SPACE:
                    attemptedPickup = true;
+
+            case ENTER:
+                if (!game_state)
+                {
+                gameCanvas.stopAnimator();
+                }
                 break;
             default:
                 break;  // do nothing, like a chad
