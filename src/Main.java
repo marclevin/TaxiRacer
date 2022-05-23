@@ -5,8 +5,10 @@ import java.io.IOException;
 import game.display.models.Taxi;
 import game.display.view.GameCanvas;
 import game.logic.InputHandler;
-import game.logic.TaxiSaver;
+import game.utility.DifficultyLoader;
+import game.utility.EDifficulty;
 import game.utility.ESettings;
+import game.utility.TaxiSaver;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -31,10 +33,37 @@ public class Main extends Application {
     private Font small_font = new Font("Verdana", 20);
     private Font large_font = new Font("Verdana", 40);
     private GameCanvas gc;
+    private EDifficulty difficulty = EDifficulty.EASY;
 
     public static void main(String[] args) {
         launch(args);
 
+    }
+
+
+    private File getDifficultyFile()
+    {
+        File easy_file = null;
+        File medium_file = null;
+        File hard_file = null;
+
+        // DIFFICULTY FILES
+         easy_file = new File("dat\\easy.txt");
+         medium_file = new File("dat\\medium.txt");
+         hard_file = new File("dat\\hard.txt");
+        if (difficulty == EDifficulty.EASY)
+        {
+            return easy_file;
+        }
+        else if (difficulty == EDifficulty.MEDIUM)
+        {
+            return medium_file;
+        }
+        else if (difficulty == EDifficulty.HARD)
+        {
+            return hard_file;
+        }
+        return null;
     }
 
     @Override
@@ -45,6 +74,9 @@ public class Main extends Application {
         Group instruct_root = new Group();
         Group game_root = new Group();
         Group canvas_root = new Group();
+        Group difficulty_root = new Group();
+
+      
 
         // BUTTONS
         Button start_btn = new Button("New game...");
@@ -54,11 +86,15 @@ public class Main extends Application {
         Button difficulty_btn = new Button("Change difficulty..");
         Button back_manual_btn = new Button("Go Back..");
         Button back_game_btn = new Button("Go Back..");
-        Button start_game_button = new Button("START");
-        Button upgrade_engine_button = new Button("Upgrade Engine");
-        Button purchase_NOS_button = new Button("Purchase NOS");
-        Button refresh_stats_button = new Button("Refresh cash & passenger info");
-        Button upgrade_wheels_button = new Button("Upgrade Wheels");
+        Button back_diff_btn = new Button("Go Back..");
+        Button start_game_btn = new Button("START");
+        Button upgrade_engine_btn = new Button("Upgrade Engine");
+        Button purchase_NOS_btn = new Button("Purchase NOS");
+        Button refresh_stats_btn = new Button("Refresh cash & passenger info");
+        Button upgrade_wheels_btn = new Button("Upgrade Wheels");
+        Button easy_btn = new Button("Easy");
+        Button medium_btn = new Button("Medium");
+        Button hard_btn = new Button("Hard");
 
         // BUTTON PROPERTIES
         continue_btn.setDisable(true);
@@ -100,6 +136,9 @@ public class Main extends Application {
                 "Upgrade your wheels to increase your ability to not be destroyed by potholes\nPress the button to purchase an upgrade.");
         Text walletInfo = new Text();
         Text passengerInfo = new Text();
+        Text difficultyText = new Text("Click the buttons below to change difficulty.\nCurrent Difficulty: Easy");
+        
+
         instruct.setX(ESettings.SCENE_WIDTH.getVal() / 2);
         instruct.setFont(small_font);
 
@@ -108,6 +147,12 @@ public class Main extends Application {
         selectedFile_Text.setVisible(false);
         titleText.setFont(large_font);
         gameText.setFont(small_font);
+
+        // DIFF
+        // By default we will load easy.
+        this.difficulty = EDifficulty.EASY;
+        DifficultyLoader.loadDifficulty(getDifficultyFile());
+
 
         MenuBar mb = new MenuBar();
         Menu menu = new Menu("File..");
@@ -181,6 +226,8 @@ public class Main extends Application {
             stg.setScene(instruct_scene);
         });
 
+    
+
        
 
         back_game_btn.setOnAction(value -> {
@@ -238,29 +285,84 @@ public class Main extends Application {
             stg.setScene(menu_scene);
         });
 
+       
+        VBox difficulty_box = new VBox();
         VBox game_box = new VBox();
         VBox canvas_box = new VBox();
+        difficulty_box.setAlignment(Pos.CENTER);
+        difficulty_box.getChildren().addAll(difficultyText, easy_btn, medium_btn, hard_btn, back_diff_btn);
+        difficulty_box.prefWidthProperty().bind(stg.widthProperty());
+        difficulty_box.setSpacing(25);
+        difficulty_root.getChildren().add(difficulty_box);
+
+        Scene difficulty_scene = new Scene(difficulty_root, ESettings.SCENE_WIDTH.getVal(),
+        ESettings.SCENE_HEIGHT.getVal());
+
+        difficulty_btn.setOnAction(value -> {
+            if (difficulty == EDifficulty.EASY)
+            {
+            difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Easy");
+             easy_btn.setDisable(true);
+            medium_btn.setDisable(false);
+            hard_btn.setDisable(false);
+            }
+            if (difficulty == EDifficulty.MEDIUM)
+            {
+            difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Medium");
+                medium_btn.setDisable(true);
+                easy_btn.setDisable(false);
+                hard_btn.setDisable(false);
+
+            }
+            if (difficulty == EDifficulty.HARD)
+            {
+            difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Hard");
+                hard_btn.setDisable(true);
+                easy_btn.setDisable(false);
+                medium_btn.setDisable(false);
+            }
+            stg.setScene(difficulty_scene);
+        });
+
+        back_diff_btn.setOnAction(value -> {
+            stg.setScene(menu_scene);
+        });
+
+        easy_btn.setOnAction(value -> {
+            difficulty = EDifficulty.EASY;
+            difficulty_btn.fire();
+        });
+
+        medium_btn.setOnAction(value -> {
+            difficulty = EDifficulty.MEDIUM;
+            difficulty_btn.fire();
+        });
+
+        hard_btn.setOnAction(value -> {
+            difficulty = EDifficulty.HARD;
+            difficulty_btn.fire();
+        });
 
         game_root.getChildren().addAll(game_box);
         Scene game_scene = new Scene(game_root, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
         HBox wheel_box = new HBox();
         wheel_box.setAlignment(Pos.CENTER);
         wheel_box.setSpacing(25);
-        wheel_box.getChildren().addAll(WheelUpgradeText, upgrade_wheels_button);
+        wheel_box.getChildren().addAll(WheelUpgradeText, upgrade_wheels_btn);
 
         HBox control_box = new HBox();
         control_box.setAlignment(Pos.CENTER);
         control_box.setSpacing(25);
-        control_box.getChildren().addAll(start_game_button, refresh_stats_button, back_game_btn);
+        control_box.getChildren().addAll(start_game_btn, refresh_stats_btn, back_game_btn);
         HBox engine_box = new HBox();
 
         engine_box.setAlignment(Pos.CENTER);
-        engine_box.getChildren().addAll(engineUpgradeText, upgrade_engine_button);
+        engine_box.getChildren().addAll(engineUpgradeText, upgrade_engine_btn);
         engine_box.setSpacing(50);
 
         HBox NOS_box = new HBox();
         NOS_box.setAlignment(Pos.CENTER);
-        NOS_box.getChildren().addAll(NOSPurchaseText, purchase_NOS_button);
+        NOS_box.getChildren().addAll(NOSPurchaseText, purchase_NOS_btn);
         NOS_box.setSpacing(50);
 
         walletInfo.setFill(Color.GREEN);
@@ -272,7 +374,7 @@ public class Main extends Application {
         game_box.setSpacing(25);
         game_box.setAlignment(Pos.CENTER);
 
-        refresh_stats_button.setOnAction(value -> {
+        refresh_stats_btn.setOnAction(value -> {
             if (InputHandler.getTaxi() == null) {
                 walletInfo.setText("");
                 passengerInfo.setText("");
@@ -281,9 +383,9 @@ public class Main extends Application {
             walletInfo.setText(String.format("Cash avaliable: %.2f", InputHandler.getTaxi().getWallet()));
             passengerInfo.setText(
                     String.format("Total Passengers picked up: %d", InputHandler.getTaxi().getCareerPassengers()));
-                    upgrade_engine_button.setDisable(false);
-                        upgrade_wheels_button.setDisable(false);
-                        purchase_NOS_button.setDisable(false);
+                    upgrade_engine_btn.setDisable(false);
+                        upgrade_wheels_btn.setDisable(false);
+                        purchase_NOS_btn.setDisable(false);
             
         });
 
@@ -298,10 +400,11 @@ public class Main extends Application {
                 alert.showAndWait().ifPresent(rs -> {
                     if (rs == ok) {
                         InputHandler.setTaxi(null);
+                        DifficultyLoader.loadDifficulty(getDifficultyFile());
                         gc.initCanvas();
-                        upgrade_engine_button.setDisable(true);
-                        upgrade_wheels_button.setDisable(true);
-                        purchase_NOS_button.setDisable(true);
+                        upgrade_engine_btn.setDisable(true);
+                        upgrade_wheels_btn.setDisable(true);
+                        purchase_NOS_btn.setDisable(true);
                         walletInfo.setText("");
                         passengerInfo.setText("");
                         stg.setScene(game_scene);
@@ -311,9 +414,10 @@ public class Main extends Application {
                 });
             } else {
                 stg.setScene(game_scene);
-                upgrade_engine_button.setDisable(true);
-                upgrade_wheels_button.setDisable(true);
-                purchase_NOS_button.setDisable(true);
+                DifficultyLoader.loadDifficulty(getDifficultyFile());
+                upgrade_engine_btn.setDisable(true);
+                upgrade_wheels_btn.setDisable(true);
+                purchase_NOS_btn.setDisable(true);
                 walletInfo.setText("");
                         passengerInfo.setText("");
             }
@@ -330,10 +434,11 @@ public class Main extends Application {
         InputHandler.setUpgradeScene(game_scene);
 
         continue_btn.setOnAction(value -> {
+            DifficultyLoader.loadDifficulty(getDifficultyFile());
             stg.setScene(game_scene);
         });
         stg.setScene(menu_scene);
-        start_game_button.setOnAction(value -> {
+        start_game_btn.setOnAction(value -> {
             stg.setScene(canvas_scene);
             gc.initCanvas();
             gc.runAnimator();

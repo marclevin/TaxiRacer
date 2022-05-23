@@ -30,18 +30,20 @@ public class SpriteVisitor implements Visitor
 
     @Override
     public void visit(Pothole pothole) {
-        System.out.println("Touched pothole");
-        
+        // When you touch a pothole, add time to the taxi's slowdown.
+        // Pothole resistance will change the time to add.
+        InputHandler.getTaxi().addPunishment(4 - InputHandler.getTaxi().getPotholeResistance());
     }
 
     @Override
     public void visit(Passenger passenger) {
-        if (passenger.getEPassenger() == EPassenger.PASSENGER_BOTTOM) {
+        if (passenger.getEPassenger() == EPassenger.PASSENGER_BOTTOM && !bottom_render_list.contains(passenger)) {
             bottom_render_list.add(passenger);
     }
-    if (InputHandler.pickupAttempted())
+    if (InputHandler.pickupAttempted() && !clean_list.contains(passenger))
     {
     clean_list.add(passenger);
+    InputHandler.getTaxi().addPunishment(60);
     InputHandler.pickupBlock();
     }
 }

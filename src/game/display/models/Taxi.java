@@ -20,7 +20,10 @@ public class Taxi extends Sprite
     private int career_passengers = 0;
     private transient boolean isPrime = true;
     private transient Image primeImage, secondImage = null;
-    private int slowDownPenalty = 120;
+    private int punishment_clock = 0;
+    private int engine_upgrade = 0;
+    // Max 3
+    private int pothole_resistance = 0;
     private transient ETaxiPositions myPosition = null;
 
 
@@ -30,22 +33,45 @@ public class Taxi extends Sprite
         super(x, y);
     }
 
+    public void setEngineUpgrade(int upgrade)
+    {
+        this.engine_upgrade = upgrade;
+    }
 
-
+    public int getEngineUpgrade()
+    {
+        return this.engine_upgrade;
+    }
 
     public void setImageSet(Image prime, Image secondary)
     {
         this.primeImage = prime;
         this.secondImage = secondary;
     }
-    public void setSlowDown(int slowdown)
+
+    public void addPunishment(int punishment)
     {
-        this.slowDownPenalty = slowdown;
+        this.punishment_clock += punishment;
     }
 
-    public int getSlowDown()
+    public int getPunishment()
     {
-        return slowDownPenalty;
+        return this.punishment_clock;
+    }
+
+    public void minusPunishment()
+    {
+        this.punishment_clock = this.punishment_clock - (1 + this.engine_upgrade);
+    }
+
+    public int getPotholeResistance()
+    {
+        return this.pothole_resistance;
+    }
+
+    public void setPotHoleResistance(int resistance)
+    {
+        this.pothole_resistance = resistance;
     }
 
     public ETaxiPositions getPosition()

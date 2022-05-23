@@ -33,9 +33,13 @@ public class PassengerPool {
         passengerImage = image;
     }
 
+    private static int getRandomNumber(int min, int max) {
+        return (int) (Math.random() * (max - min) + min);
+    }
+
     private static int rand_x()
     {
-       return rand.nextInt(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal()+1);
+       return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
     }
 
     public Passenger aquirePassenger() {
@@ -44,7 +48,7 @@ public class PassengerPool {
         if (passengers.isEmpty()) {
             passenger_location = rand.nextBoolean() ? EPassenger.PASSENGER_BOTTOM : EPassenger.PASSENGER_TOP;
             Pair<Integer,EPassenger> potential_location = new Pair<Integer,EPassenger>(rand_x(), passenger_location);
-            while (passenger_locations.contains(potential_location)) {
+            while (passenger_locations.contains(potential_location) ) {
                 potential_location = new Pair<Integer,EPassenger>(rand_x(), passenger_location);
             }
             passenger_locations.add(potential_location);

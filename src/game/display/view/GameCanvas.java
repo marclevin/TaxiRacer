@@ -12,6 +12,8 @@ import game.display.models.Taxi;
 import game.logic.InputHandler;
 import game.logic.PassengerPool;
 import game.utility.ETaxiPositions;
+import game.utility.DifficultyLoader;
+import game.utility.EPothole;
 import game.utility.ESettings;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -71,28 +73,27 @@ public class GameCanvas extends Canvas {
         tertiary_road.setImage(road_image);
         Road quaternary_road = new Road(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
         quaternary_road.setImage(road_image);
-        
-       
-
-        Pothole pothole_first = new Pothole(ESettings.PRIMARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+20);
-        Pothole pothole_second = new Pothole(ESettings.SECONDARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+75);
-        Pothole pothole_third = new Pothole(ESettings.TERTIARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+115);
-        Pothole pothole_forth = new Pothole(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+175);
-        pothole_first.setImage(pothole_image);
-        pothole_second.setImage(pothole_image);
-        pothole_third.setImage(pothole_image);
-        pothole_forth.setImage(pothole_image);
-        
-
         loadedSprites.add(primary_road);
         loadedSprites.add(secondary_road);
         loadedSprites.add(tertiary_road);
         loadedSprites.add(quaternary_road);
 
-        loadedSprites.add(pothole_first);
-        loadedSprites.add(pothole_second);
-        loadedSprites.add(pothole_third);
-        loadedSprites.add(pothole_forth);
+
+
+       // Diff loader goes here
+       int[] potholeLanes = DifficultyLoader.getLanes();
+        
+        for (int i = 0; i < potholeLanes.length; i++) {
+            for (int k = 0; k < potholeLanes[i]; k++)
+            {
+            Pothole temp = new Pothole(rand_x(),EPothole.values()[i].getLocation());
+            temp.setImage(pothole_image);
+            loadedSprites.add(temp);
+            }
+        }
+        
+
+
 
         // Maybe add a start anim here.
         if (InputHandler.getTaxi() != null) {
@@ -112,7 +113,18 @@ public class GameCanvas extends Canvas {
         return loadedSprites;
     }
 
-    private Image load_image(String path) {
+    
+
+    private static int getRandomNumber(int min, int max) {
+        return (int) (Math.random() * (max - min) + min);
+    }
+    
+    private static int rand_x()
+    {
+        return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
+    }
+
+    private static Image load_image(String path) {
         try (FileInputStream fis = new FileInputStream(path)) {
             return new Image(fis);
         } catch (IOException e) {

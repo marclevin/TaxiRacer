@@ -1,4 +1,4 @@
-package game.logic;
+package game.utility;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -27,7 +27,8 @@ public class TaxiSaver {
         {
         oos.writeDouble(taxi.getWallet());
         oos.writeInt(taxi.getCareerPassengers());
-        oos.writeInt(taxi.getSlowDown());
+        oos.writeInt(taxi.getPotholeResistance());
+        oos.writeInt(taxi.getEngineUpgrade());
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -46,11 +47,13 @@ public class TaxiSaver {
         {
             double wallet = ois.readDouble();
             int career_passengers = ois.readInt();
-            int slowDown = ois.readInt();
+            int potholeResistance = ois.readInt();
+            int engineUpgrade = ois.readInt();
              taxi = new Taxi(0, 0);
             taxi.addCash(wallet);
             taxi.setCareerPassengers(career_passengers-1); //  Minus one because the addCash method adds a passenger
-            taxi.setSlowDown(slowDown);
+            taxi.setPotHoleResistance(potholeResistance);
+            taxi.setEngineUpgrade(engineUpgrade);
         } catch (IOException e)
         {
             e.printStackTrace();

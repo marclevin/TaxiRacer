@@ -116,7 +116,7 @@ public class AnimationHandler extends AnimationTimer {
             police.setX(20);
             police.scale(EPolicePositions.POLICE_DISPLAY);
             render_sprite(police);
-            if (currentDistance > -500) {
+            if (currentDistance > -200) {
                 warning_buffer++;
                 if (warning_buffer < 300) {
                     gc.setFont(warning_font);
@@ -138,6 +138,7 @@ public class AnimationHandler extends AnimationTimer {
             taxi.addCash(p.getCash());
             passengerPool.releasePassenger(p);
             pickup_count++;
+            passenger_count--;
         }
         spriteVisitor.getCleanList().clear();
     }
@@ -174,6 +175,12 @@ public class AnimationHandler extends AnimationTimer {
         render_scoreboard();
         frame_count++;
 
+        if (taxi.getPunishment() > 0) {
+            taxi.minusPunishment();
+            speedAdjust = -5;
+            police.changeDistance(2);
+        } else {speedAdjust = -7;}
+
 
         // Sprite drawing and animation
 
@@ -186,17 +193,15 @@ public class AnimationHandler extends AnimationTimer {
             // Only render the sprite if its going to be behind the taxi & police.
             if (!spriteVisitor.getBottomRenderList().contains(sprite))
                 render_sprite(sprite);
-                render_boundBox(sprite);
             // Out of bounds checker
             if (sprite.getX() < -ESettings.SCENE_WIDTH.getVal()) {
                 sprite.setX((int) ESettings.SCENE_WIDTH.getVal()); // Clean cast
             }
         }
         render_sprite(taxi);
-        render_boundBox(taxi);
         if (!police.isHidden())
         {
-            police.setX(police.getDistance()-300);
+            police.setX(police.getDistance()-200);
             render_sprite(police);
         }
         // Taxi out of bounds
@@ -225,7 +230,7 @@ public class AnimationHandler extends AnimationTimer {
 
         // Every 8 frames.
         if (frame_count % 8 == 0) {
-            police.changeDistance(2);
+            police.changeDistance(-2);
             taxi.swapImage();
             police.swapImage();
         }
