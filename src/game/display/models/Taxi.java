@@ -1,12 +1,12 @@
 package game.display.models;
 
 
-import game.logic.Acceptor;
+
 import game.logic.Visitor;
 import game.utility.ETaxiPositions;
 import javafx.scene.image.Image;
 
-public class Taxi extends Sprite implements Acceptor
+public class Taxi extends Sprite
 {
 
     /**
@@ -95,9 +95,30 @@ public class Taxi extends Sprite implements Acceptor
         this.setY(myPosition.getLocation());
         this.myImageView.setFitHeight(myPosition.getHeightScale());
         this.myBound.setWidth(this.myImageView.getFitHeight()*1.5);
+        this.myBound.setY(this.myBound.getY() + 30);
         this.myBound.setHeight(this.myImageView.getFitHeight() * 0.5);
+        if (myPosition == ETaxiPositions.FOURTH_LANE_TAXI)
+        {
+            this.myBound.setY(this.myBound.getY() + 60);
+            this.myBound.setHeight(this.myBound.getHeight() - 40);
+        };
+        if (myPosition == ETaxiPositions.THIRD_LANE_TAXI)
+        {
+            this.myBound.setY(this.myBound.getY() + 50);
+            this.myBound.setHeight(this.myBound.getHeight() - 35);
+        };
+        if (myPosition == ETaxiPositions.SECOND_LANE_TAXI)
+        {
+            this.myBound.setY(this.myBound.getY() + 40);
+            this.myBound.setHeight(this.myBound.getHeight() - 30);
+        };
+        if (myPosition == ETaxiPositions.FIRST_LANE_TAXI)
+        {
+            this.myBound.setY(this.myBound.getY() - 20);
+        };
+        }
 
-    }
+
 
 
 

@@ -2,12 +2,13 @@ package game.display.models;
 
 import java.io.Serializable;
 
+import game.logic.Acceptor;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-public abstract class Sprite implements Serializable
+public abstract class Sprite implements Serializable, Acceptor
 {
     protected transient int x,y;
     protected transient BoundBox myBound;

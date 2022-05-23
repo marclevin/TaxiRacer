@@ -1,5 +1,6 @@
 package game.display.models;
 
+import game.logic.Visitor;
 import game.utility.EPolicePositions;
 import javafx.scene.image.Image;
 
@@ -65,5 +66,11 @@ public class Police extends Sprite {
             this.setImage(primeImage);
             isPrime = true;
         }
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        // TODO Auto-generated method stub
+        
     }
 }

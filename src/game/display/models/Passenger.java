@@ -2,11 +2,11 @@ package game.display.models;
 
 import java.util.Random;
 
-import game.logic.Acceptor;
+
 import game.logic.Visitor;
 import game.utility.EPassenger;
 
-public class Passenger extends Sprite implements Acceptor {
+public class Passenger extends Sprite {
 
     private EPassenger passenger_location=null;
 
@@ -51,6 +51,7 @@ public class Passenger extends Sprite implements Acceptor {
         this.setY(passenger_location.getLocation());
         this.myImageView.setFitHeight(passenger_location.getHeightScale());
         this.myBound.setHeight(passenger_location.getHeightScale());
+        this.myBound.setWidth(100);
         if (passenger_location == EPassenger.PASSENGER_BOTTOM)
         {
            this.myBound.setHeight(100);

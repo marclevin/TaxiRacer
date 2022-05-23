@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import game.display.models.Police;
+import game.display.models.Pothole;
 import game.display.models.Road;
 import game.display.models.Sprite;
 import game.display.models.Taxi;
@@ -54,6 +55,7 @@ public class GameCanvas extends Canvas {
 
     private ArrayList<Sprite> load_fresh_sprites() {
         // Image loading.
+        Image pothole_image = load_image("img\\pothole.png");
         Image road_image = load_image("img\\road_try.png");
         Image taxi_prime = load_image("img\\taxi_move_1.png");
         Image taxi_second = load_image("img\\taxi_move_2.png");
@@ -69,10 +71,28 @@ public class GameCanvas extends Canvas {
         tertiary_road.setImage(road_image);
         Road quaternary_road = new Road(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
         quaternary_road.setImage(road_image);
+        
+       
+
+        Pothole pothole_first = new Pothole(ESettings.PRIMARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+20);
+        Pothole pothole_second = new Pothole(ESettings.SECONDARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+75);
+        Pothole pothole_third = new Pothole(ESettings.TERTIARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+115);
+        Pothole pothole_forth = new Pothole(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal()+175);
+        pothole_first.setImage(pothole_image);
+        pothole_second.setImage(pothole_image);
+        pothole_third.setImage(pothole_image);
+        pothole_forth.setImage(pothole_image);
+        
+
         loadedSprites.add(primary_road);
         loadedSprites.add(secondary_road);
         loadedSprites.add(tertiary_road);
         loadedSprites.add(quaternary_road);
+
+        loadedSprites.add(pothole_first);
+        loadedSprites.add(pothole_second);
+        loadedSprites.add(pothole_third);
+        loadedSprites.add(pothole_forth);
 
         // Maybe add a start anim here.
         if (InputHandler.getTaxi() != null) {

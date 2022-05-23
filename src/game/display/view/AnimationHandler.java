@@ -8,7 +8,7 @@ import game.display.models.Sprite;
 import game.display.models.Taxi;
 import game.logic.InputHandler;
 import game.logic.PassengerPool;
-import game.utility.EPassenger;
+import game.logic.SpriteVisitor;
 import game.utility.EPolicePositions;
 import game.utility.ESettings;
 import game.utility.ETaxiPositions;
@@ -26,16 +26,16 @@ public class AnimationHandler extends AnimationTimer {
     private GraphicsContext gc = null;
     private SnapshotParameters param = null;
     // speed
-    private double speedAdjust = -5;
+    private double speedAdjust = -7;
     private ArrayList<Sprite> sprites = null;
     private Taxi taxi = null;
     private Police police = null;
-    private long pickup_slowdown = 0;
-    private boolean pickup_flag = false;
+    private int pickup_slowdown = Integer.MAX_VALUE;
     private int frame_count, passenger_count = 0;
     private ArrayList<Passenger> cleanup_list = null;
     private int pickup_count = 0;
     private int warning_buffer = 0;
+    private SpriteVisitor spriteVisitor = null;
 
     private boolean stop_game = false;
 
@@ -53,7 +53,7 @@ public class AnimationHandler extends AnimationTimer {
         police = InputHandler.getPolice();
         passengerPool = PassengerPool.getInstance();
         cleanup_list = new ArrayList<Passenger>();
-        bottom_render_list = new ArrayList<Passenger>();
+        spriteVisitor = new SpriteVisitor();
     };
 
     private void cleanPage() {
@@ -71,12 +71,9 @@ public class AnimationHandler extends AnimationTimer {
         stop_game = false;
         pickup_count = 0;
         pickup_slowdown = 0;
-        pickup_flag = false;
         passenger_count = 0;
         frame_count = 0;
         warning_buffer = 0;
-        cleanup_list.clear();
-        bottom_render_list.clear();
         police.resetDistance();
         taxi.scale(ETaxiPositions.values()[2]);
         taxi.setX(0);
@@ -136,38 +133,26 @@ public class AnimationHandler extends AnimationTimer {
      * This function cleans up collected passengers and adds their cash to the taxi.
      */
     private void cleanPassenger() {
-        for (Passenger p : cleanup_list) {
+        for (Passenger p : spriteVisitor.getCleanList()) {
             sprites.remove(p);
-            // text_hang.add(new TempText(p.getX(), p.getY(), String.format("+R%.2f",
-            // p.getCash()),p.getEPassenger()));
             taxi.addCash(p.getCash());
             passengerPool.releasePassenger(p);
             pickup_count++;
         }
-        cleanup_list.clear();
+        spriteVisitor.getCleanList().clear();
     }
 
     private Image getInstanceImage(Sprite s) {
         return s.getMyImageView().snapshot(param, null);
     }
 
-    private void checkPassengerIntersection(Sprite sprite) {
-        if (sprite instanceof Passenger) { // Smelly code
-            Passenger passenger = (Passenger) sprite;
-            if (taxi.intersects(passenger)) {
-                if (passenger.getEPassenger() == EPassenger.PASSENGER_BOTTOM) {
-                    bottom_render_list.add(passenger);
-                }
-                if (InputHandler.pickupAttempted()) {
-                    pickup_flag = true;
-                    speedAdjust = -1;
-                    cleanup_list.add(passenger);
-                    passenger_count--;
-                    InputHandler.pickupBlock();
-                }
+
+    private void checkSpriteTouch(Sprite sprite) {
+            if (taxi.intersects(sprite)) {
+                sprite.accept(spriteVisitor);
+                
             }
         }
-    }
 
     // Called 60 times a second.
     @Override
@@ -189,41 +174,26 @@ public class AnimationHandler extends AnimationTimer {
         render_scoreboard();
         frame_count++;
 
-        // Taxi modification.
-        if (pickup_flag && pickup_slowdown < taxi.getSlowDown()) {
-            if (pickup_slowdown % 15 == 0) {
-                speedAdjust -= 0.5;
-            }
-            pickup_slowdown += 1;
-            police.changeDistance(1);
-        } else {
-            pickup_slowdown = 0;
-            speedAdjust = -7;
-            pickup_flag = false;
-        }
 
-        if (frame_count % 8 == 0) {
-            taxi.swapImage();
-            police.swapImage();
-        }
         // Sprite drawing and animation
 
         for (Sprite sprite : sprites) {
 
             sprite.setX((int) Math.ceil(sprite.getX() + speedAdjust));
 
-            checkPassengerIntersection(sprite);
+            checkSpriteTouch(sprite);
 
             // Only render the sprite if its going to be behind the taxi & police.
-            if (!bottom_render_list.contains(sprite))
+            if (!spriteVisitor.getBottomRenderList().contains(sprite))
                 render_sprite(sprite);
-
+                render_boundBox(sprite);
             // Out of bounds checker
             if (sprite.getX() < -ESettings.SCENE_WIDTH.getVal()) {
                 sprite.setX((int) ESettings.SCENE_WIDTH.getVal()); // Clean cast
             }
         }
         render_sprite(taxi);
+        render_boundBox(taxi);
         if (!police.isHidden())
         {
             police.setX(police.getDistance()-300);
@@ -248,31 +218,19 @@ public class AnimationHandler extends AnimationTimer {
 
 
 
-        for (Passenger p : bottom_render_list) {
+        for (Passenger p : spriteVisitor.getBottomRenderList()) {
             render_sprite(p);
         }
-        bottom_render_list.clear();
+        spriteVisitor.getBottomRenderList().clear();
 
-        // Text pop up for cash received. may rework this 2022/05/22
-        /*
-         * ArrayList<TempText> temp = new ArrayList<TempText>();
-         * for (TempText t : text_hang) {
-         * t.tickDown();
-         * if (t.getHold() != 0)
-         * {
-         * gc.setFill(Color.GREEN);
-         * gc.setFont(new Font("Arial", 20));
-         * gc.fillText(t.getText(), t.getX(), t.getY());
-         * temp.add(t);
-         * }
-         * }
-         * text_hang.clear();
-         * text_hang = temp;
-         */
+        // Every 8 frames.
         if (frame_count % 8 == 0) {
-            police.changeDistance(1);
+            police.changeDistance(2);
+            taxi.swapImage();
+            police.swapImage();
         }
 
+        // Every 60 frames.
         if (frame_count == 60) {
             InputHandler.pickupBlock();
             frame_count = 0;
