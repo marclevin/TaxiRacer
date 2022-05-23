@@ -25,7 +25,9 @@ public class TaxiSaver {
                 BufferedOutputStream bos = new BufferedOutputStream(fos);
                 ObjectOutputStream oos = new ObjectOutputStream(bos))
         {
-        oos.writeObject(taxi);
+        oos.writeDouble(taxi.getWallet());
+        oos.writeInt(taxi.getCareerPassengers());
+        oos.writeInt(taxi.getSlowDown());
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -42,8 +44,14 @@ public class TaxiSaver {
                 BufferedInputStream bis = new BufferedInputStream(fis);
                 ObjectInputStream ois = new ObjectInputStream(bis))
         {
-            taxi = (Taxi) ois.readObject();
-        } catch (IOException | ClassNotFoundException e)
+            double wallet = ois.readDouble();
+            int career_passengers = ois.readInt();
+            int slowDown = ois.readInt();
+             taxi = new Taxi(0, 0);
+            taxi.addCash(wallet);
+            taxi.setCareerPassengers(career_passengers-1); //  Minus one because the addCash method adds a passenger
+            taxi.setSlowDown(slowDown);
+        } catch (IOException e)
         {
             e.printStackTrace();
             return null;

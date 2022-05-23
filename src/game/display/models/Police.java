@@ -13,10 +13,14 @@ public class Police extends Sprite {
      * @param y
      * @param image
      */
-    public Police(int x, int y, Image prime, Image second) {
-        super(x, y, prime);
+    public Police(int x, int y) {
+        super(x, y);
+    }
+
+    public void setImageSet(Image prime, Image secondary)
+    {
         this.primeImage = prime;
-        this.secondImage = second;
+        this.secondImage = secondary;
     }
 
     public boolean isHidden()

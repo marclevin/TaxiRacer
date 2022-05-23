@@ -10,25 +10,20 @@ import javafx.scene.paint.Color;
 public abstract class Sprite implements Serializable
 {
     protected transient int x,y;
-    protected BoundBox myBound;
+    protected transient BoundBox myBound;
     protected transient Image myImage = null;
     protected transient ImageView myImageView =null;
     private transient SnapshotParameters param = null;
-    public Sprite(int x, int y, Image image)
+    public Sprite(int x, int y)
     {
         this.x = x;
         this.y = y;
         myImageView = new ImageView();
-        setImage(image);
         param = new SnapshotParameters();
         param.setFill(Color.TRANSPARENT);
         myBound = new BoundBox(0, 0, x, y);
     };
 
-    public Sprite()
-    {
-        this(0, 0, null);
-    }
 
 
     public void setPosition(int x, int y)

@@ -5,7 +5,6 @@ import java.util.Random;
 import game.logic.Acceptor;
 import game.logic.Visitor;
 import game.utility.EPassenger;
-import javafx.scene.image.Image;
 
 public class Passenger extends Sprite implements Acceptor {
 
@@ -13,12 +12,11 @@ public class Passenger extends Sprite implements Acceptor {
 
     private double cash = 0;
 
-    public Passenger(int x, int y, Image image) {
-        super(x, y,image);
-        myBound.setHeight(image.getHeight());
-        myBound.setWidth(image.getWidth());
+    public Passenger(int x, int y) {
+        super(x, y);
         setCash();
     }
+
 
     public double getCash()
     {

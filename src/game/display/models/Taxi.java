@@ -25,22 +25,22 @@ public class Taxi extends Sprite implements Acceptor
 
 
 
-    public Taxi(int x, int y, Image prime, Image secondary)
+    public Taxi(int x, int y)
     {
-        super(x, y, prime);
-        this.primeImage = prime;
-        this.secondImage = secondary;
+        super(x, y);
     }
 
-    public Taxi()
-    {
-        super(0, 0, null);
-    }
+
+
 
     public void setImageSet(Image prime, Image secondary)
     {
         this.primeImage = prime;
         this.secondImage = secondary;
+    }
+    public void setSlowDown(int slowdown)
+    {
+        this.slowDownPenalty = slowdown;
     }
 
     public int getSlowDown()
@@ -97,6 +97,13 @@ public class Taxi extends Sprite implements Acceptor
         this.myBound.setWidth(this.myImageView.getFitHeight()*1.5);
         this.myBound.setHeight(this.myImageView.getFitHeight() * 0.5);
 
+    }
+
+
+
+
+    public void setCareerPassengers(int career_passengers) {
+        this.career_passengers = career_passengers;
     }
 
     

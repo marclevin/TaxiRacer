@@ -48,7 +48,8 @@ public class PassengerPool {
                 potential_location = new Pair<Integer,EPassenger>(rand_x(), passenger_location);
             }
             passenger_locations.add(potential_location);
-            p = new Passenger(potential_location.getKey(), 0, passengerImage);
+            p = new Passenger(potential_location.getKey(), 0);
+            p.setImage(passengerImage);
             p.scale(passenger_location);
         } else {
             p = passengers.get(passengers.size() - 1);
