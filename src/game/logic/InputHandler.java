@@ -54,7 +54,7 @@ public final class InputHandler {
         gameCanvas = g;
     }
 
-    public static void lostGame()
+    public static void endGame()
     {
         game_state = false;
     }
@@ -121,6 +121,7 @@ public final class InputHandler {
 
             case SPACE:
                    attemptedPickup = true;
+                   break;
 
             case ENTER:
                 if (!game_state)
@@ -139,6 +140,12 @@ public final class InputHandler {
                     mainStage.setScene(upgradeScene);
                 }
                 break;
+
+            case E:
+                if (taxi.hasNOS() && !taxi.hasUsedNos())
+                {
+                    taxi.setUsedNos(true);
+                }
             default:
                 break;  // do nothing, like a chad
         }

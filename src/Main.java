@@ -66,6 +66,42 @@ public class Main extends Application {
         return null;
     }
 
+    private double getEngineUpgradeCost()
+    {
+        double cost =0;
+        switch (InputHandler.getTaxi().getEngineUpgrade()) {
+            case 0:
+                cost = 100.0;
+                break;
+            case 1:
+                cost = 200.0;
+                break;
+            case 2:
+                cost = 500.0;
+            default:
+                break;
+        }
+        return cost;
+    }
+
+    private double getWheelUpgradeCost()
+    {
+        double cost =0;
+        switch (InputHandler.getTaxi().getPotholeResistance()) {
+            case 0:
+                cost = 100.0;
+                break;
+            case 1:
+                cost = 250.0;
+                break;
+            case 2:
+                cost = 700.0;
+            default:
+                break;
+        }
+        return cost;
+    }
+
     @Override
     public void start(Stage stg) throws Exception {
 
@@ -131,7 +167,7 @@ public class Main extends Application {
         Text engineUpgradeText = new Text(
                 "Upgrade your engine to increase your speed.\nPress the button to purchase an upgrade.");
         Text NOSPurchaseText = new Text(
-                "Purchase illegal nitrogen (NOS) to rapidly increase your speed. \n(Adds ability to boost speed for a moment. press E to use)\nPress the button to purchase an upgrade.");
+                "Purchase illegal nitrogen (NOS) to rapidly increase your speed. \n(Adds ability to boost speed for a moment. press E to use !!!ONE TIME USE ONLY!!!)\nPress the button to purchase an upgrade.");
         Text WheelUpgradeText = new Text(
                 "Upgrade your wheels to increase your ability to not be destroyed by potholes\nPress the button to purchase an upgrade.");
         Text walletInfo = new Text();
@@ -225,8 +261,6 @@ public class Main extends Application {
         manual_btn.setOnAction(value -> {
             stg.setScene(instruct_scene);
         });
-
-    
 
        
 
@@ -350,6 +384,13 @@ public class Main extends Application {
         wheel_box.setSpacing(25);
         wheel_box.getChildren().addAll(WheelUpgradeText, upgrade_wheels_btn);
 
+        upgrade_engine_btn.setOnAction(value -> {
+            if (InputHandler.getTaxi() == null) {
+                return;
+            }
+        });
+
+
         HBox control_box = new HBox();
         control_box.setAlignment(Pos.CENTER);
         control_box.setSpacing(25);
@@ -380,14 +421,69 @@ public class Main extends Application {
                 passengerInfo.setText("");
                 return;
             }
+            if (InputHandler.getTaxi().hasNOS())
+             {purchase_NOS_btn.setDisable(true);} else {purchase_NOS_btn.setDisable(false);}
             walletInfo.setText(String.format("Cash avaliable: %.2f", InputHandler.getTaxi().getWallet()));
+            upgrade_engine_btn.setText(String.format("Upgrade Engine (%d/3)", InputHandler.getTaxi().getEngineUpgrade()));
+            upgrade_wheels_btn.setText(String.format("Upgrade Wheels (%d/3)", InputHandler.getTaxi().getPotholeResistance()));
+            engineUpgradeText.setText(String.format("Upgrade your engine to increase your speed.\nPress the button to purchase an upgrade.\nCost: %.2f",getEngineUpgradeCost()));
+            WheelUpgradeText.setText(String.format("Upgrade your wheels to increase your ability to not be destroyed by potholes\nPress the button to purchase an upgrade.\nCost: %.2f",getWheelUpgradeCost()));
             passengerInfo.setText(
                     String.format("Total Passengers picked up: %d", InputHandler.getTaxi().getCareerPassengers()));
-                    upgrade_engine_btn.setDisable(false);
-                        upgrade_wheels_btn.setDisable(false);
-                        purchase_NOS_btn.setDisable(false);
+                   if (InputHandler.getTaxi().getEngineUpgrade() != 3) {upgrade_engine_btn.setDisable(false);} else {upgrade_engine_btn.setDisable(true);}
+                   if (InputHandler.getTaxi().getPotholeResistance() != 3){ upgrade_wheels_btn.setDisable(false);} else {upgrade_wheels_btn.setDisable(true);}
             
         });
+
+        upgrade_engine_btn.setOnAction(value -> {
+            if (InputHandler.getTaxi() == null) {
+                return;
+            }
+            double cost= getEngineUpgradeCost();
+            if (InputHandler.getTaxi().getWallet() >= cost) {
+            InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
+            InputHandler.getTaxi().setEngineUpgrade(InputHandler.getTaxi().getEngineUpgrade()+1);
+            }
+            else
+            {
+                upgrade_engine_btn.setText("Insufficient Funds");
+            }
+            refresh_stats_btn.fire();
+        });
+
+        upgrade_wheels_btn.setOnAction(value -> {
+            if (InputHandler.getTaxi() == null) {
+                return;
+            }
+            double cost= getWheelUpgradeCost();
+            if (InputHandler.getTaxi().getWallet() >= cost) {
+            InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
+            InputHandler.getTaxi().setPotHoleResistance(InputHandler.getTaxi().getPotholeResistance()+1);
+            }
+            else
+            {
+                upgrade_wheels_btn.setText("Insufficient Funds");
+            }
+            refresh_stats_btn.fire();
+        });
+
+        purchase_NOS_btn.setOnAction(value -> {
+            if (InputHandler.getTaxi() == null) {
+                return;
+            }
+            double cost=100;
+            if (InputHandler.getTaxi().getWallet() >= cost) {
+            InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
+            InputHandler.getTaxi().setNOS(true);
+            }
+            else
+            {
+                purchase_NOS_btn.setText("Insufficient Funds");
+            }
+            refresh_stats_btn.fire();
+        });
+
+
 
         start_btn.setOnAction(value -> {
             if (InputHandler.getTaxi() != null) {

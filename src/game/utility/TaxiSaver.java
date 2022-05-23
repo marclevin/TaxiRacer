@@ -29,6 +29,7 @@ public class TaxiSaver {
         oos.writeInt(taxi.getCareerPassengers());
         oos.writeInt(taxi.getPotholeResistance());
         oos.writeInt(taxi.getEngineUpgrade());
+        oos.writeBoolean(taxi.hasNOS());
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -49,11 +50,13 @@ public class TaxiSaver {
             int career_passengers = ois.readInt();
             int potholeResistance = ois.readInt();
             int engineUpgrade = ois.readInt();
+            boolean hasNOS = ois.readBoolean();
              taxi = new Taxi(0, 0);
             taxi.addCash(wallet);
             taxi.setCareerPassengers(career_passengers-1); //  Minus one because the addCash method adds a passenger
             taxi.setPotHoleResistance(potholeResistance);
             taxi.setEngineUpgrade(engineUpgrade);
+            taxi.setNOS(hasNOS);
         } catch (IOException e)
         {
             e.printStackTrace();

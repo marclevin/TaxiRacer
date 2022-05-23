@@ -43,7 +43,7 @@ public class SpriteVisitor implements Visitor
     if (InputHandler.pickupAttempted() && !clean_list.contains(passenger))
     {
     clean_list.add(passenger);
-    InputHandler.getTaxi().addPunishment(60);
+    InputHandler.getTaxi().addPunishment(20);
     InputHandler.pickupBlock();
     }
 }

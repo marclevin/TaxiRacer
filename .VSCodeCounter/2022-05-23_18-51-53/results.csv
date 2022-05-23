@@ -1,0 +1,32 @@
+"filename", "language", "Java", "Batch", "comment", "blank", "total"
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\Main$1.class", "Java", 14, 0, 0, 0, 14
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\Main.class", "Java", 37, 0, 3, 0, 40
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\logic\Settings.class", "Java", 11, 0, 0, 0, 11
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\utility\InputImg$1.class", "Java", 10, 0, 0, 0, 10
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\utility\InputImg.class", "Java", 19, 0, 0, 0, 19
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\docs\build.bat", "Batch", 0, 85, 0, 14, 99
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\docs\clean.bat", "Batch", 0, 36, 0, 7, 43
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\Main.java", "Java", 376, 0, 11, 64, 451
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\BoundBox.java", "Java", 49, 0, 0, 17, 66
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Passenger.java", "Java", 44, 0, 3, 17, 64
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Police.java", "Java", 56, 0, 7, 14, 77
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Pothole.java", "Java", 13, 0, 0, 9, 22
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Road.java", "Java", 12, 0, 5, 10, 27
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Sprite.java", "Java", 65, 0, 0, 14, 79
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Taxi.java", "Java", 115, 0, 9, 35, 159
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\view\AnimationHandler.java", "Java", 196, 0, 15, 40, 251
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\view\GameCanvas.java", "Java", 108, 0, 4, 26, 138
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\Acceptor.java", "Java", 4, 0, 0, 2, 6
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\InputHandler.java", "Java", 126, 0, 0, 22, 148
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\PassengerPool.java", "Java", 63, 0, 1, 11, 75
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\SpriteVisitor.java", "Java", 44, 0, 4, 12, 60
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\Visitor.java", "Java", 9, 0, 0, 4, 13
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\DifficultyLoader.java", "Java", 28, 0, 1, 7, 36
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EDifficulty.java", "Java", 6, 0, 0, 3, 9
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPassenger.java", "Java", 17, 0, 0, 9, 26
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPolicePositions.java", "Java", 29, 0, 0, 1, 30
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPothole.java", "Java", 16, 0, 0, 4, 20
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\ESettings.java", "Java", 20, 0, 0, 4, 24
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\ETaxiPositions.java", "Java", 28, 0, 0, 2, 30
+"c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\TaxiSaver.java", "Java", 60, 0, 0, 13, 73
+"Total", "-", 1575, 121, 63, 361, 2120

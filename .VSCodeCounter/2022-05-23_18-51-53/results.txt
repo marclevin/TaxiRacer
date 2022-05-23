@@ -1,0 +1,67 @@
+Date : 2022-05-23 18:51:53
+Directory : c:\Users\marcl\Desktop\Practical X\TaxiRacer
+Total : 30 files,  1696 codes, 63 comments, 361 blanks, all 2120 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Java     |         28 |      1,575 |         63 |        340 |      1,978 |
+| Batch    |          2 |        121 |          0 |         21 |        142 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                     | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                        |         30 |      1,696 |         63 |        361 |      2,120 |
+| bin                                                                                      |          5 |         91 |          3 |          0 |         94 |
+| bin\model                                                                                |          3 |         40 |          0 |          0 |         40 |
+| bin\model\logic                                                                          |          1 |         11 |          0 |          0 |         11 |
+| bin\model\utility                                                                        |          2 |         29 |          0 |          0 |         29 |
+| docs                                                                                     |          2 |        121 |          0 |         21 |        142 |
+| src                                                                                      |         23 |      1,484 |         60 |        340 |      1,884 |
+| src\game                                                                                 |         22 |      1,108 |         49 |        276 |      1,433 |
+| src\game\display                                                                         |          9 |        658 |         43 |        182 |        883 |
+| src\game\display\models                                                                  |          7 |        354 |         24 |        116 |        494 |
+| src\game\display\view                                                                    |          2 |        304 |         19 |         66 |        389 |
+| src\game\logic                                                                           |          5 |        246 |          5 |         51 |        302 |
+| src\game\utility                                                                         |          8 |        204 |          1 |         43 |        248 |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                 | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\Main$1.class                            | Java     |         14 |          0 |          0 |         14 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\Main.class                              | Java     |         37 |          3 |          0 |         40 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\logic\Settings.class              | Java     |         11 |          0 |          0 |         11 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\utility\InputImg$1.class          | Java     |         10 |          0 |          0 |         10 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\bin\model\utility\InputImg.class            | Java     |         19 |          0 |          0 |         19 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\docs\build.bat                              | Batch    |         85 |          0 |         14 |         99 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\docs\clean.bat                              | Batch    |         36 |          0 |          7 |         43 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\Main.java                               | Java     |        376 |         11 |         64 |        451 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\BoundBox.java       | Java     |         49 |          0 |         17 |         66 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Passenger.java      | Java     |         44 |          3 |         17 |         64 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Police.java         | Java     |         56 |          7 |         14 |         77 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Pothole.java        | Java     |         13 |          0 |          9 |         22 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Road.java           | Java     |         12 |          5 |         10 |         27 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Sprite.java         | Java     |         65 |          0 |         14 |         79 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\models\Taxi.java           | Java     |        115 |          9 |         35 |        159 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\view\AnimationHandler.java | Java     |        196 |         15 |         40 |        251 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\display\view\GameCanvas.java       | Java     |        108 |          4 |         26 |        138 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\Acceptor.java                | Java     |          4 |          0 |          2 |          6 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\InputHandler.java            | Java     |        126 |          0 |         22 |        148 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\PassengerPool.java           | Java     |         63 |          1 |         11 |         75 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\SpriteVisitor.java           | Java     |         44 |          4 |         12 |         60 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\logic\Visitor.java                 | Java     |          9 |          0 |          4 |         13 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\DifficultyLoader.java      | Java     |         28 |          1 |          7 |         36 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EDifficulty.java           | Java     |          6 |          0 |          3 |          9 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPassenger.java            | Java     |         17 |          0 |          9 |         26 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPolicePositions.java      | Java     |         29 |          0 |          1 |         30 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\EPothole.java              | Java     |         16 |          0 |          4 |         20 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\ESettings.java             | Java     |         20 |          0 |          4 |         24 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\ETaxiPositions.java        | Java     |         28 |          0 |          2 |         30 |
+| c:\Users\marcl\Desktop\Practical X\TaxiRacer\src\game\utility\TaxiSaver.java             | Java     |         60 |          0 |         13 |         73 |
+| Total                                                                                    |          |      1,696 |         63 |        361 |      2,120 |
++------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

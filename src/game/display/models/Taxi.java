@@ -22,8 +22,9 @@ public class Taxi extends Sprite
     private transient Image primeImage, secondImage = null;
     private int punishment_clock = 0;
     private int engine_upgrade = 0;
-    // Max 3
     private int pothole_resistance = 0;
+    private boolean hasNOS = false;
+    private transient boolean usedNOS = false;
     private transient ETaxiPositions myPosition = null;
 
 
@@ -38,6 +39,23 @@ public class Taxi extends Sprite
         this.engine_upgrade = upgrade;
     }
 
+    public boolean hasUsedNos()
+    {
+        return usedNOS;
+    }
+
+    public void setUsedNos(boolean usedNOS)
+    {
+        this.usedNOS = usedNOS;
+    }
+    public boolean hasNOS()
+    {
+        return this.hasNOS;
+    }
+    public void setNOS(boolean nos)
+    {
+        this.hasNOS = nos;
+    }
     public int getEngineUpgrade()
     {
         return this.engine_upgrade;
@@ -151,6 +169,10 @@ public class Taxi extends Sprite
 
     public void setCareerPassengers(int career_passengers) {
         this.career_passengers = career_passengers;
+    }
+
+    public void setWallet(double d) {
+        this.wallet = d;
     }
 
     

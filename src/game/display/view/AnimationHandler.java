@@ -30,16 +30,16 @@ public class AnimationHandler extends AnimationTimer {
     private ArrayList<Sprite> sprites = null;
     private Taxi taxi = null;
     private Police police = null;
-    private int pickup_slowdown = Integer.MAX_VALUE;
     private int frame_count, passenger_count = 0;
-    private ArrayList<Passenger> cleanup_list = null;
     private int pickup_count = 0;
     private int warning_buffer = 0;
+    private int NOS_counter = 0;
+    private int anti_pothole = 0;
     private SpriteVisitor spriteVisitor = null;
 
     private boolean stop_game = false;
+    private boolean lost_game = false;
 
-    private ArrayList<Passenger> bottom_render_list = null;
     private Font common_font = new Font("Verdana", 20);
     private Font warning_font = new Font("Verdana", 40);
 
@@ -52,8 +52,8 @@ public class AnimationHandler extends AnimationTimer {
         taxi = InputHandler.getTaxi();
         police = InputHandler.getPolice();
         passengerPool = PassengerPool.getInstance();
-        cleanup_list = new ArrayList<Passenger>();
         spriteVisitor = new SpriteVisitor();
+        anti_pothole = taxi.getPotholeResistance();
     };
 
     private void cleanPage() {
@@ -70,7 +70,6 @@ public class AnimationHandler extends AnimationTimer {
     {
         stop_game = false;
         pickup_count = 0;
-        pickup_slowdown = 0;
         passenger_count = 0;
         frame_count = 0;
         warning_buffer = 0;
@@ -125,7 +124,6 @@ public class AnimationHandler extends AnimationTimer {
                     warning_buffer = 0;
                 }
             }
-
         }
     }
 
@@ -166,21 +164,44 @@ public class AnimationHandler extends AnimationTimer {
 
         if (stop_game)
         {
-            // Lose conditions go here.
-            gc.setFont(new Font("Verdana", 40));
+            if (lost_game) {
+            gc.setFont(new Font("Verdana", 30));
             gc.setFill(Color.BLACK);
-            gc.fillText("You lost!\n Please press ENTER to continue...", ESettings.SCENE_WIDTH.getVal() / 2, ESettings.SCENE_HEIGHT.getVal() / 2);
-            InputHandler.lostGame();
+            gc.fillText("You lost!\nDon't give up!\nPurchase NITRO if you're getting caught often.\nPlease press ENTER to continue...", 50, 200);
+            InputHandler.endGame();
+            }
+            else {
+                gc.setFont(new Font("Verdana", 30));
+                gc.setFill(Color.BLACK);
+                gc.fillText("You WIN!\nCongratulations!\nYou evaded the police.\nPlease press ENTER to continue...", 50, 200);
+                InputHandler.endGame();
+            }
         } else {
         render_scoreboard();
         frame_count++;
 
         if (taxi.getPunishment() > 0) {
             taxi.minusPunishment();
-            speedAdjust = -5;
+            speedAdjust = -5 - taxi.getEngineUpgrade();
             police.changeDistance(2);
-        } else {speedAdjust = -7;}
-
+        } else {speedAdjust = -7 - taxi.getEngineUpgrade();}
+        // At any point if they use the NOS button.
+        if (taxi.hasUsedNos())
+        {
+            NOS_counter++;
+            if (NOS_counter < 240)
+            {
+                taxi.setPotHoleResistance(4);
+                speedAdjust = -20;
+                police.changeDistance(-12);
+            } else {
+                NOS_counter = 0;
+                taxi.setNOS(false);
+                taxi.setUsedNos(false);
+                // it's fun not to be burded by potholes when going fast.
+                taxi.setPotHoleResistance(anti_pothole);
+            }
+        }
 
         // Sprite drawing and animation
 
@@ -219,6 +240,14 @@ public class AnimationHandler extends AnimationTimer {
         {
             // LOSE CONDITION
             stop_game = true;
+            lost_game = true;
+        }
+
+        if (pickup_count == 100)
+        {
+            // WIN CONDITION
+            stop_game = true;
+            lost_game = false;
         }
 
 
@@ -230,7 +259,7 @@ public class AnimationHandler extends AnimationTimer {
 
         // Every 8 frames.
         if (frame_count % 8 == 0) {
-            police.changeDistance(-2);
+            police.changeDistance(-4);
             taxi.swapImage();
             police.swapImage();
         }
