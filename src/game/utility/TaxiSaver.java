@@ -11,13 +11,23 @@ import java.io.ObjectOutputStream;
 
 import game.display.models.Taxi;
 
-public class TaxiSaver {
+/**
+ * This class is responsible for saving and loading the game (effectively a taxi instance).
+ */
+public final class TaxiSaver {
     private static File target = null;
 
+    /**
+     * Private constructor.
+     */
     private TaxiSaver()
     {
     }
 
+    /**
+     * This function saves the provided @param taxi to the target file.
+     * @param taxi The taxi to be saved.
+     */
     public static void save(Taxi taxi)
     {
         if (taxi == null) return;
@@ -38,6 +48,10 @@ public class TaxiSaver {
         
     }
 
+    /**
+     * This function loads the taxi from the target file.
+     * @return The loaded taxi.
+     */
     public static Taxi getTaxi()
     {
         System.out.println("Trying to read a taxi");
@@ -67,6 +81,10 @@ public class TaxiSaver {
     }
 
 
+    /**
+     * The target file to save the taxi to.
+     * @param f The file.
+     */
     public static void setFile(File f)
     {
     target = f;

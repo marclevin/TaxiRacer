@@ -9,6 +9,9 @@ import game.utility.ESettings;
 import javafx.scene.image.Image;
 import javafx.util.Pair;
 
+/**
+ * This class is the object pool for the passengers.
+ */
 public class PassengerPool {
     private static PassengerPool instance = null;
     private static Random rand = null;
@@ -16,11 +19,18 @@ public class PassengerPool {
     private static ArrayList<Passenger> passengers;
     private static ArrayList<Pair<Integer, EPassenger>> passenger_locations;
 
+    /**
+     * Private constructor to ensure only one instance exists
+     */
     private PassengerPool() {
         passengers = new ArrayList<Passenger>();
         rand = new Random();
     }
 
+    /**
+     * This function returns the instance of the passenger pool.
+     * @return The instance of the passenger pool
+     */
     public static PassengerPool getInstance() {
         if (instance == null) {
             instance = new PassengerPool();
@@ -29,19 +39,37 @@ public class PassengerPool {
         return instance;
     }
 
+    /**
+     * This function sets the image of passengers created in the pool.
+     * @param image The image of the passengers.
+     */
     public static void setPassengerImage(Image image) {
         passengerImage = image;
     }
 
+      /**
+     * This function gets a random number
+     * @param min The minimum number (inclusive)
+     * @param max The maximum number (inclusive)
+     * @return a random number between min and max
+     */
     private static int getRandomNumber(int min, int max) {
         return (int) (Math.random() * (max - min) + min);
     }
 
+    /**
+     * This function gets a random X position for a passenger.
+     * @return A random X position for a passenger.
+     */
     private static int rand_x()
     {
        return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
     }
 
+    /**
+     * This function creates a passenger at a random location or releases one from the pool but randomizes it's location
+     * @return The passenger requested.
+     */
     public Passenger aquirePassenger() {
         Passenger p = null;
         EPassenger passenger_location = null;
@@ -63,6 +91,10 @@ public class PassengerPool {
         return p;
     }
 
+    /**
+     * Releases a passenger back to the pool.
+     * @param p The passenger to be released.
+     */
     public void releasePassenger(Passenger p) {
         if (p != null) {
             passengers.add(p);

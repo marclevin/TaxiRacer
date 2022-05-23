@@ -6,18 +6,30 @@ import java.util.Random;
 import game.logic.Visitor;
 import game.utility.EPassenger;
 
+/**
+ * This class represents a passenger.
+ */
 public class Passenger extends Sprite {
 
     private EPassenger passenger_location=null;
 
     private double cash = 0;
 
+    /**
+     * Constructor for the passenger.
+     * @param x X coordinate of the passenger
+     * @param y Y coordinate of the passenger
+     */
     public Passenger(int x, int y) {
         super(x, y);
         setCash();
     }
 
 
+    /**
+     * Gets the cash of the passenger.
+     * @return The cash of the passenger.
+     */
     public double getCash()
     {
         return this.cash;
@@ -34,17 +46,32 @@ public class Passenger extends Sprite {
         this.cash = rand.nextDouble(10.0) + 1.0;
     }
 
+    /**
+     * Acceptor for the visitor pattern.
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
+    /**
+     * Sets the passenger location.
+     * @param passenger_location The passenger location.
+     */
     public void setLocation(EPassenger passenger_location) {
         this.passenger_location = passenger_location;
     }
+    /**
+     * Gets the passenger location.
+     * @return The passenger location.
+     */
     public EPassenger getEPassenger() {
         return passenger_location;
     }
 
+    /**
+     * Sets the passenger scale
+     * @param info The passenger scale.
+     */
     public void scale(EPassenger info)
     {
         this.passenger_location = info;

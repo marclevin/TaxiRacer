@@ -4,12 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * This class loads difficulty aka pothole combinations from the difficulty files located in \\dat
+ */
 public final class DifficultyLoader {
     private static int[] lanes;
+    /**
+     * Private constructor, no instance needed.
+     */
     private DifficultyLoader() {
         
     }
 
+    /**
+     * Loads difficulty from a given {@code File}
+     * @param f The file to load from
+     */
     public static void loadDifficulty(File f)
     {
         lanes = new int[4];
@@ -28,6 +38,10 @@ public final class DifficultyLoader {
         }
     }
 
+    /**
+     * This returns the number of potholes in a given lane.
+     * @return The number of potholes in a given lane.
+     */
     public static int[] getLanes() {
         return lanes;
     }

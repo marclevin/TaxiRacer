@@ -19,42 +19,63 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+/**
+ * This class is responsible for drawing the game to the screen.
+ */
 public class GameCanvas extends Canvas {
     private GraphicsContext gc = null;
     private ArrayList<Sprite> sprites = null;
     private AnimationHandler handler = null;
     private Taxi taxi = null;
 
+    /**
+     * This is the constructor for the game canvas. (default)
+     */
     public GameCanvas() {
         this(ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
-    // could do loading logic here.
+    /**
+     * This is the constructor for the game canvas.
+     * @param width The width of the game canvas.
+     * @param height The height of the game canvas.
+     */
     public GameCanvas(double width, double height) {
         super(width, height);
         gc = this.getGraphicsContext2D();
 
     };
 
+    /**
+     * This method is responsible for the initialization of the game canvas.
+     * This is done here as the game can load and save and will not always occur during construction of the object.
+     */
     public void initCanvas() {
         sprites = load_fresh_sprites();
         handler = new AnimationHandler(gc, sprites);
     }
 
+    /**
+     * This function runs the underlying animation handler.
+     */
     public void runAnimator() {
         handler.start();
     }
 
+    /**
+     * This function stops the underlying animation handler and resets the game state.
+     */
     public void stopAnimator() {
         handler.stop();
         handler.resetGame();
         gc.clearRect(0, 0, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
-    public boolean isGameRunning() {
-        return handler.isRunning();
-    }
 
+    /**
+     * This function loads sprites and populates the main sprite array as well as sets the main police and taxi sprites.
+     * @return an {@code ArrayList<Sprite>} of sprites.
+     */
     private ArrayList<Sprite> load_fresh_sprites() {
         // Image loading.
         Image pothole_image = load_image("img\\pothole.png");
@@ -73,6 +94,8 @@ public class GameCanvas extends Canvas {
         tertiary_road.setImage(road_image);
         Road quaternary_road = new Road(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
         quaternary_road.setImage(road_image);
+
+        // Adding the roads
         loadedSprites.add(primary_road);
         loadedSprites.add(secondary_road);
         loadedSprites.add(tertiary_road);
@@ -80,7 +103,7 @@ public class GameCanvas extends Canvas {
 
 
 
-       // Diff loader goes here
+       // Difficulty Loading
        int[] potholeLanes = DifficultyLoader.getLanes();
         
         for (int i = 0; i < potholeLanes.length; i++) {
@@ -95,7 +118,7 @@ public class GameCanvas extends Canvas {
 
 
 
-        // Maybe add a start anim here.
+        // Logic to prevent invalid states.
         if (InputHandler.getTaxi() != null) {
             this.taxi = InputHandler.getTaxi();
             taxi.setImageSet(taxi_prime, taxi_second);
@@ -114,16 +137,30 @@ public class GameCanvas extends Canvas {
     }
 
     
-
+    /**
+     * This function gets a random number
+     * @param min The minimum number (inclusive)
+     * @param max The maximum number (inclusive)
+     * @return a random number between min and max
+     */
     private static int getRandomNumber(int min, int max) {
         return (int) (Math.random() * (max - min) + min);
     }
     
+    /**
+     * This function gets a random x coordinate
+     * @return a random x coordinate
+     */
     private static int rand_x()
     {
         return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
     }
 
+    /**
+     * This function loads an image from the file system.
+     * @param path of the image
+     * @return an Image from the path.
+     */
     private static Image load_image(String path) {
         try (FileInputStream fis = new FileInputStream(path)) {
             return new Image(fis);

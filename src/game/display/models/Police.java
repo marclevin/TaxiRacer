@@ -10,39 +10,56 @@ public class Police extends Sprite {
     private Image primeImage, secondImage = null;
 
     /**
-     * @param x
-     * @param y
-     * @param image
+     * Constructor for the Police class
+     * @param x X coordinate of the police
+     * @param y Y coordinate of the police
      */
     public Police(int x, int y) {
         super(x, y);
     }
 
+    /**
+     * Sets the image set of the police
+     * @param prime The first image of the police
+     * @param secondary The second image of the police
+     */
     public void setImageSet(Image prime, Image secondary)
     {
         this.primeImage = prime;
         this.secondImage = secondary;
     }
 
+    /**
+     * Checks if the police are off screen
+     * @return True if the police are off screen, false otherwise
+     */
     public boolean isHidden()
     {
         return (this.distance < 0);
     }
 
-    public void resetDistance()
-    {
-        this.distance = -1080;
-    }
+    /**
+     * Changes the distance of the police from the Taxi
+     * @param distance Distance to add
+     */
     public void changeDistance(int distance)
     {
         this.distance+=distance;
     }
+    /**
+     * Gets the distance of the police from the taxi
+     * @return The distance of the police from the taxi
+     */
     public int getDistance()
     {
         return this.distance;
     }
     
 
+    /**
+     * Scales the police based on {@code EPolicePositions}.
+     * @param position The position of the police.
+     */
     public void scale(EPolicePositions position)
     {
         this.setY(position.getLocation());
@@ -54,7 +71,9 @@ public class Police extends Sprite {
 
     }
 
-    
+    /**
+     * Swaps the image of the police, used to make the car appear like it is moving.
+     */
     public void swapImage()
     {
         if (isPrime)
@@ -68,9 +87,12 @@ public class Police extends Sprite {
         }
     }
 
+    /**
+     * Acceptor method for the Visitor pattern.
+     */
     @Override
     public void accept(Visitor visitor) {
-        // TODO Auto-generated method stub
+        // This does nothing as the police do not need to accept visitors.
         
     }
 }
