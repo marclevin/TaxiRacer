@@ -1,106 +1,113 @@
 package game.logic;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.ThreadLocalRandom;
 
 import game.display.models.Passenger;
 import game.utility.EPassenger;
 import game.utility.ESettings;
 import javafx.scene.image.Image;
-import javafx.util.Pair;
 
 /**
- * This class is the object pool for the passengers.
+ * An object pool for passengers.
+ *
+ * <p>
+ * Passengers are created and dropped constantly during a run, so collected ones are parked
+ * here and handed back out with a fresh pavement, position and fare instead of being
+ * reallocated.
+ * </p>
  */
-public class PassengerPool {
+public final class PassengerPool {
+
     private static PassengerPool instance = null;
-    private static Random rand = null;
     private static Image passengerImage = null;
-    private static ArrayList<Passenger> passengers;
-    private static ArrayList<Pair<Integer, EPassenger>> passenger_locations;
+
+    private final Deque<Passenger> idle = new ArrayDeque<>();
 
     /**
-     * Private constructor to ensure only one instance exists
+     * Private constructor to ensure only one instance exists.
      */
     private PassengerPool() {
-        passengers = new ArrayList<Passenger>();
-        rand = new Random();
     }
 
     /**
      * This function returns the instance of the passenger pool.
+     *
      * @return The instance of the passenger pool
      */
     public static PassengerPool getInstance() {
         if (instance == null) {
             instance = new PassengerPool();
-            passenger_locations = new ArrayList<Pair<Integer, EPassenger>>();
         }
         return instance;
     }
 
     /**
      * This function sets the image of passengers created in the pool.
+     *
      * @param image The image of the passengers.
      */
     public static void setPassengerImage(Image image) {
         passengerImage = image;
     }
 
-      /**
-     * This function gets a random number
-     * @param min The minimum number (inclusive)
-     * @param max The maximum number (inclusive)
-     * @return a random number between min and max
-     */
-    private static int getRandomNumber(int min, int max) {
-        return (int) (Math.random() * (max - min) + min);
-    }
-
     /**
-     * This function gets a random X position for a passenger.
-     * @return A random X position for a passenger.
+     * Hands out a passenger, recycling a collected one where possible.
+     *
+     * <p>
+     * Every passenger is re-randomised on the way out — pavement, position, destination and
+     * fare — so a recycled instance is indistinguishable from a fresh one.
+     * </p>
+     *
+     * @return a ready-to-use passenger.
      */
-    private static int rand_x()
-    {
-       return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
-    }
-
-    /**
-     * This function creates a passenger at a random location or releases one from the pool but randomizes it's location
-     * @return The passenger requested.
-     */
-    public Passenger aquirePassenger() {
-        Passenger p = null;
-        EPassenger passenger_location = null;
-        if (passengers.isEmpty()) {
-            passenger_location = rand.nextBoolean() ? EPassenger.PASSENGER_BOTTOM : EPassenger.PASSENGER_TOP;
-            Pair<Integer,EPassenger> potential_location = new Pair<Integer,EPassenger>(rand_x(), passenger_location);
-            while (passenger_locations.contains(potential_location) ) {
-                potential_location = new Pair<Integer,EPassenger>(rand_x(), passenger_location);
-            }
-            passenger_locations.add(potential_location);
-            p = new Passenger(potential_location.getKey(), 0);
-            p.setImage(passengerImage);
-            p.scale(passenger_location);
-        } else {
-            p = passengers.get(passengers.size() - 1);
-            p.setX(rand_x());
-            passengers.remove(passengers.size() - 1);
+    public Passenger acquirePassenger() {
+        Passenger p = idle.pollLast();
+        if (p == null) {
+            p = new Passenger(0, 0);
         }
+
+        p.setImage(passengerImage);
+        // scale() also fixes the Y position, so it has to run before the X is chosen.
+        p.scale(ThreadLocalRandom.current().nextBoolean()
+                ? EPassenger.PASSENGER_BOTTOM
+                : EPassenger.PASSENGER_TOP);
+        p.setX(randomX());
+        p.roll();
         return p;
     }
 
     /**
      * Releases a passenger back to the pool.
+     *
      * @param p The passenger to be released.
      */
     public void releasePassenger(Passenger p) {
         if (p != null) {
-            passengers.add(p);
-            // Change their cash value.
-            p.setCash();
-            passenger_locations.remove(new Pair<Integer,EPassenger>(p.getX(), p.getEPassenger()));
+            idle.addLast(p);
         }
+    }
+
+    /**
+     * Empties the pool, so a new game does not inherit the previous game's passengers.
+     */
+    public void clear() {
+        idle.clear();
+    }
+
+    /**
+     * This function gets a random X position for a passenger.
+     *
+     * <p>
+     * The band is twice the screen width because sprites scroll left and wrap around, so
+     * spawning off screen to the right is what staggers them naturally.
+     * </p>
+     *
+     * @return A random X position for a passenger.
+     */
+    private static int randomX() {
+        int width = ESettings.SCENE_WIDTH.getVal();
+        return ThreadLocalRandom.current().nextInt(-width, width);
     }
 }
