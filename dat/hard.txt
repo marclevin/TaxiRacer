@@ -1,4 +1,29 @@
-3
-4
-5
-3
+# Taxi Racer - HARD
+# They know your plate. The police close in even when you do everything right, so the
+# only question is how much you can earn before they reach you. A flawless run lasts
+# about three minutes; a careless one lasts under one.
+#
+# Metre budget against the 820m gap:
+#   doing nothing wrong  ~= 820m over ~170s
+#   one pothole          ~=  90m
+#   one fare             ~=  60m   (15m once the engine is maxed)
+#   one body             ~= 540m   (two is fatal)
+
+potholes        = 2,3,4,3
+
+# The chase: cleanDrift is positive, so the gap shrinks no matter how well you drive.
+policeStart     = 820
+cleanDrift      = 0.08
+slowGain        = 3.0
+nosDrift        = -10.0
+
+# The street: fewer fares waiting, and far more people stepping off the kerb.
+maxFares        = 8
+maxJaywalkers   = 4
+spawnSteps      = 46
+jaywalkerChance = 0.46
+
+# Running someone down is close to a death sentence.
+splatPenalty    = 180
+enrageSteps     = 360
+enrageGain      = 1.0
