@@ -1,8 +1,7 @@
 package game.display.view;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import game.display.models.Police;
 import game.display.models.Pothole;
@@ -11,10 +10,11 @@ import game.display.models.Sprite;
 import game.display.models.Taxi;
 import game.logic.InputHandler;
 import game.logic.PassengerPool;
-import game.utility.ETaxiPositions;
+import game.utility.Assets;
 import game.utility.DifficultyLoader;
 import game.utility.EPothole;
 import game.utility.ESettings;
+import game.utility.ETaxiPositions;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -22,11 +22,24 @@ import javafx.scene.image.Image;
 /**
  * This class is responsible for drawing the game to the screen.
  */
-public class GameCanvas extends Canvas {
-    private GraphicsContext gc = null;
-    private ArrayList<Sprite> sprites = null;
+public final class GameCanvas extends Canvas {
+
+    /**
+     * Road tiles kept in play.
+     *
+     * <p>
+     * Four is the smallest number that covers the canvas at
+     * {@link ESettings#ROAD_TILE_SPACING}: one starts off screen to the left, two cover the
+     * visible road, and the fourth is scrolling in from the right.
+     * </p>
+     */
+    private static final int ROAD_TILES = 4;
+
+    private final GraphicsContext gc;
+    private List<Sprite> sprites = new ArrayList<>();
+    private List<Road> roads = new ArrayList<>();
     private AnimationHandler handler = null;
-    private Taxi taxi = null;
+    private Runnable onRunEnded = null;
 
     /**
      * This is the constructor for the game canvas. (default)
@@ -37,28 +50,55 @@ public class GameCanvas extends Canvas {
 
     /**
      * This is the constructor for the game canvas.
-     * @param width The width of the game canvas.
+     *
+     * @param width  The width of the game canvas.
      * @param height The height of the game canvas.
      */
     public GameCanvas(double width, double height) {
         super(width, height);
-        gc = this.getGraphicsContext2D();
+        this.gc = getGraphicsContext2D();
+    }
 
-    };
+    /**
+     * Registers a callback fired whenever a run ends, used to bank the player's progress.
+     *
+     * @param callback the action to run.
+     */
+    public void setOnRunEnded(Runnable callback) {
+        this.onRunEnded = callback;
+        if (handler != null) {
+            handler.setOnRunEnded(callback);
+        }
+    }
 
     /**
      * This method is responsible for the initialization of the game canvas.
-     * This is done here as the game can load and save and will not always occur during construction of the object.
+     *
+     * <p>
+     * This is done here rather than in the constructor because the game can be loaded and
+     * saved, so the taxi being driven is not known when the canvas is built.
+     * </p>
      */
     public void initCanvas() {
-        sprites = load_fresh_sprites();
-        handler = new AnimationHandler(gc, sprites);
+        // Passengers left on the street belong to the run that just ended.
+        PassengerPool.getInstance().clear();
+
+        roads = loadRoads();
+        sprites = loadFreshSprites();
+
+        handler = new AnimationHandler(gc, sprites, roads, Assets.image("img/passenger.png"));
+        handler.setOnRunEnded(onRunEnded);
+        handler.resetGame();
     }
 
     /**
      * This function runs the underlying animation handler.
      */
     public void runAnimator() {
+        if (handler == null) {
+            initCanvas();
+        }
+        InputHandler.resetForNewRun();
         handler.start();
     }
 
@@ -66,109 +106,98 @@ public class GameCanvas extends Canvas {
      * This function stops the underlying animation handler and resets the game state.
      */
     public void stopAnimator() {
+        if (handler == null) {
+            return;
+        }
         handler.stop();
         handler.resetGame();
         gc.clearRect(0, 0, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
     }
 
+    /**
+     * Abandons the current run and immediately starts a fresh one, keeping the player's cash.
+     */
+    public void restartRun() {
+        if (handler != null) {
+            handler.stop();
+        }
+        initCanvas();
+        runAnimator();
+    }
 
     /**
-     * This function loads sprites and populates the main sprite array as well as sets the main police and taxi sprites.
-     * @return an {@code ArrayList<Sprite>} of sprites.
+     * Builds the scrolling road backdrop.
+     *
+     * @return the road tiles, left to right.
      */
-    private ArrayList<Sprite> load_fresh_sprites() {
-        // Image loading.
-        Image pothole_image = load_image("img\\pothole.png");
-        Image road_image = load_image("img\\road_try.png");
-        Image taxi_prime = load_image("img\\taxi_move_1.png");
-        Image taxi_second = load_image("img\\taxi_move_2.png");
-        Image passenger_image = load_image("img\\passenger.png");
-        Image police_prime = load_image("img\\police_move_1.png");
-        Image police_second = load_image("img\\police_move_2.png");
-        ArrayList<Sprite> loadedSprites = new ArrayList<Sprite>();
-        Road primary_road = new Road(ESettings.PRIMARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
-        primary_road.setImage(road_image);
-        Road secondary_road = new Road(ESettings.SECONDARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
-        secondary_road.setImage(road_image);
-        Road tertiary_road = new Road(ESettings.TERTIARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
-        tertiary_road.setImage(road_image);
-        Road quaternary_road = new Road(ESettings.QUATERNARY_ROAD_X.getVal(), ESettings.ROAD_Y.getVal());
-        quaternary_road.setImage(road_image);
+    private List<Road> loadRoads() {
+        Image roadImage = Assets.image("img/road_try.png");
+        List<Road> tiles = new ArrayList<>(ROAD_TILES);
+        for (int i = 0; i < ROAD_TILES; i++) {
+            Road tile = new Road((i - 1) * ESettings.ROAD_TILE_SPACING.getVal(), ESettings.ROAD_Y.getVal());
+            tile.setImage(roadImage);
+            tiles.add(tile);
+        }
+        return tiles;
+    }
 
-        // Adding the roads
-        loadedSprites.add(primary_road);
-        loadedSprites.add(secondary_road);
-        loadedSprites.add(tertiary_road);
-        loadedSprites.add(quaternary_road);
+    /**
+     * This function loads sprites and populates the main sprite array as well as sets the
+     * main police and taxi sprites.
+     *
+     * @return the collidable sprites for a fresh run.
+     */
+    private List<Sprite> loadFreshSprites() {
+        Image potholeImage = Assets.image("img/pothole.png");
+        Image taxiPrime = Assets.image("img/taxi_move_1.png");
+        Image taxiSecond = Assets.image("img/taxi_move_2.png");
+        Image passengerImage = Assets.image("img/passenger.png");
+        Image policePrime = Assets.image("img/police_move_1.png");
+        Image policeSecond = Assets.image("img/police_move_2.png");
 
+        List<Sprite> loadedSprites = new ArrayList<>();
 
-
-       // Difficulty Loading
-       int[] potholeLanes = DifficultyLoader.getLanes();
-        
-        for (int i = 0; i < potholeLanes.length; i++) {
-            for (int k = 0; k < potholeLanes[i]; k++)
-            {
-            Pothole temp = new Pothole(rand_x(),EPothole.values()[i].getLocation());
-            temp.setImage(pothole_image);
-            loadedSprites.add(temp);
+        // The chosen difficulty decides how many potholes sit in each lane.
+        int[] potholeLanes = DifficultyLoader.getProfile().getPotholes();
+        for (int lane = 0; lane < potholeLanes.length; lane++) {
+            for (int k = 0; k < potholeLanes[lane]; k++) {
+                Pothole pothole = new Pothole(randomX(), EPothole.values()[lane].getLocation());
+                pothole.setImage(potholeImage);
+                loadedSprites.add(pothole);
             }
         }
-        
 
-
-
-        // Logic to prevent invalid states.
-        if (InputHandler.getTaxi() != null) {
-            this.taxi = InputHandler.getTaxi();
-            taxi.setImageSet(taxi_prime, taxi_second);
-            taxi.scale(ETaxiPositions.values()[2]);
-        } else {
+        // A continued game brings its own taxi; a new one starts from scratch.
+        Taxi taxi = InputHandler.getTaxi();
+        if (taxi == null) {
             taxi = new Taxi(0, ESettings.TAXI_INIT_Y.getVal());
-            taxi.setImageSet(taxi_prime, taxi_second);
-            taxi.scale(ETaxiPositions.values()[2]);
             InputHandler.setTaxi(taxi);
         }
-        Police police = new Police(-ESettings.SCENE_WIDTH.getVal(), ESettings.TAXI_INIT_Y.getVal());
-        police.setImageSet(police_prime, police_second);
+        taxi.setImageSet(taxiPrime, taxiSecond);
+        taxi.setOccupantImage(passengerImage);
+        // scale() parks the taxi in the middle of the road; nothing else moves it sideways.
+        taxi.scale(ETaxiPositions.values()[InputHandler.DEFAULT_LANE]);
+
+        Police police = new Police((int) Police.DEFAULT_START_DISTANCE, ESettings.TAXI_INIT_Y.getVal());
+        police.setImageSet(policePrime, policeSecond);
         InputHandler.setPolice(police);
-        PassengerPool.setPassengerImage(passenger_image);
+
+        PassengerPool.setPassengerImage(passengerImage);
         return loadedSprites;
     }
 
-    
     /**
-     * This function gets a random number
-     * @param min The minimum number (inclusive)
-     * @param max The maximum number (inclusive)
-     * @return a random number between min and max
-     */
-    private static int getRandomNumber(int min, int max) {
-        return (int) (Math.random() * (max - min) + min);
-    }
-    
-    /**
-     * This function gets a random x coordinate
+     * This function gets a random x coordinate.
+     *
+     * <p>
+     * The band is twice the screen width because sprites scroll left and wrap around, so
+     * half of them start off screen to the right.
+     * </p>
+     *
      * @return a random x coordinate
      */
-    private static int rand_x()
-    {
-        return getRandomNumber(-ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_WIDTH.getVal());
+    private static int randomX() {
+        int width = ESettings.SCENE_WIDTH.getVal();
+        return java.util.concurrent.ThreadLocalRandom.current().nextInt(-width, width);
     }
-
-    /**
-     * This function loads an image from the file system.
-     * @param path of the image
-     * @return an Image from the path.
-     */
-    private static Image load_image(String path) {
-        try (FileInputStream fis = new FileInputStream(path)) {
-            return new Image(fis);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("ERRR");
-            return null;
-        }
-    }
-
 }

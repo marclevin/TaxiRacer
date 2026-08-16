@@ -22,7 +22,7 @@ public class BoundBox {
         this.height = height;
         this.x = x;
         this.y = y;
-    };
+    }
 
     /**
      * This function detects collisions with another {@code BoundBox} object.
@@ -36,16 +36,16 @@ public class BoundBox {
                 this.x + this.width > other.getX() &&
                 this.y < other.getY() + other.getHeight() &&
                 this.y + this.height > other.getY());
-    };
+    }
 
     /**
      * Sets the width of the bounding box.
-     * 
+     *
      * @param width The new width of the bounding box.
      */
     public void setWidth(double width) {
         this.width = width;
-    };
+    }
 
     /**
      * Sets the height of the bounding box.
@@ -63,24 +63,6 @@ public class BoundBox {
      */
     public void setX(int x) {
         this.x = x;
-    }
-
-    /**
-     * Sets the x coordinate of the bounding box.
-     * 
-     * @param x The new x coordinate of the bounding box.
-     */
-    public void setX(double x) {
-        this.x = (int) x;
-    }
-
-    /**
-     * Sets the y coordinate of the bounding box.
-     * 
-     * @param y The new y coordinate of the bounding box.
-     */
-    public void setY(double y) {
-        this.y = (int) y;
     }
 
     /**

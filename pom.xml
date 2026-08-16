@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>za.co.marclevin</groupId>
+  <artifactId>taxiracer</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>Taxi Racer</name>
+  <description>Collect fares, dodge potholes and outrun the law.</description>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.5</javafx.version>
+    <!--
+      Which set of JavaFX native libraries to bundle. Overridden on the command line when
+      building for a platform other than the one doing the building, which is what the
+      container build does: "mvn -Djavafx.platform=linux package".
+    -->
+    <javafx.platform>win</javafx.platform>
+    <main.class>Launcher</main.class>
+  </properties>
+
+  <dependencies>
+    <!--
+      Declared explicitly, with the platform classifier, rather than relying on automatic
+      OS detection. The container cross-builds a Linux artifact, so the platform has to be
+      something the build can be told rather than something it guesses.
+    -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-base</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-graphics</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
+    </dependency>
+    <!-- Sound effects and music. The game runs silently without audio files present. -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-media</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>taxiracer</finalName>
+
+    <!-- The project keeps its original layout rather than moving to src/main/java. -->
+    <sourceDirectory>src</sourceDirectory>
+
+    <!--
+      Game assets are put on the classpath so they resolve identically from a source
+      checkout, from the packaged jar and from inside the container.
+    -->
+    <resources>
+      <resource>
+        <directory>img</directory>
+        <targetPath>img</targetPath>
+      </resource>
+      <resource>
+        <directory>dat</directory>
+        <targetPath>dat</targetPath>
+      </resource>
+      <resource>
+        <directory>res</directory>
+        <targetPath>res</targetPath>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${main.class}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>${main.class}</mainClass>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!-- Several JavaFX jars each carry one; they cannot coexist in a fat jar. -->
+                    <exclude>module-info.class</exclude>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,4 +1,27 @@
-2
-3
-3
-2
+# Taxi Racer - MEDIUM
+# Rush hour. Clean driving still pulls you clear, but only just, so a run is a
+# question of how much you can earn before the mistakes add up.
+#
+# Metre budget against the 950m gap:
+#   one pothole  ~=  72m
+#   one fare     ~=  48m   (13m once the engine is maxed)
+#   one body     ~= 346m   (roughly three before it is fatal)
+
+potholes        = 2,3,3,2
+
+# The chase.
+policeStart     = 950
+cleanDrift      = -0.18
+slowGain        = 2.2
+nosDrift        = -11.0
+
+# The street: busier pavements, more people chancing the crossing.
+maxFares        = 10
+maxJaywalkers   = 3
+spawnSteps      = 52
+jaywalkerChance = 0.32
+
+# Running someone down.
+splatPenalty    = 130
+enrageSteps     = 300
+enrageGain      = 0.9

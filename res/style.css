@@ -1,0 +1,147 @@
+/*
+ * Taxi Racer menu styling.
+ *
+ * The in-game canvas draws itself; everything here dresses the JavaFX menus so the
+ * front end matches the game rather than looking like a default form.
+ */
+
+.root {
+    -fx-background-color: linear-gradient(to bottom, #161a24 0%, #232c3d 55%, #303b52 100%);
+    -fx-font-family: "Verdana", "DejaVu Sans", "Liberation Sans", sans-serif;
+}
+
+/* ---------- Typography ---------- */
+
+.title {
+    -fx-fill: #ffd166;
+    -fx-font-size: 46px;
+    -fx-font-weight: bold;
+}
+
+.heading {
+    -fx-fill: #ffd166;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.body-text {
+    -fx-fill: #dbe4ee;
+    -fx-font-size: 15px;
+}
+
+.muted-text {
+    -fx-fill: #93a4bb;
+    -fx-font-size: 13px;
+}
+
+.money-text {
+    -fx-fill: #8ce99a;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.fares-text {
+    -fx-fill: #ffb4a2;
+    -fx-font-size: 16px;
+}
+
+.victory-text {
+    -fx-fill: #ffd166;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Buttons ---------- */
+
+.button {
+    -fx-background-color: #3b4a66;
+    -fx-text-fill: #f2f6fb;
+    -fx-font-size: 15px;
+    -fx-padding: 10 26 10 26;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #55688c;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #4a5d80;
+    -fx-border-color: #7e97c2;
+}
+
+.button:focused {
+    -fx-border-color: #ffd166;
+}
+
+.button:disabled {
+    -fx-opacity: 0.42;
+    -fx-cursor: default;
+}
+
+.primary-button {
+    -fx-background-color: #f4a261;
+    -fx-text-fill: #23180c;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 40 12 40;
+    -fx-border-color: #ffc98b;
+}
+
+.primary-button:hover {
+    -fx-background-color: #ffb877;
+}
+
+.buy-button {
+    -fx-min-width: 210px;
+}
+
+/* ---------- Layout blocks ---------- */
+
+.card {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 16 22 16 22;
+}
+
+/* ---------- Menu bar ---------- */
+
+.menu-bar {
+    -fx-background-color: #10141c;
+}
+
+.menu-bar .label {
+    -fx-text-fill: #dbe4ee;
+}
+
+.menu-item .label {
+    -fx-text-fill: #20262f;
+}
+
+/* ---------- Manual ---------- */
+
+/* The instructions are taller than the fixed window, so they sit in a scroll pane. It is
+   made transparent throughout so the page still reads as one sheet of text rather than as
+   a grey panel dropped onto the menu. */
+.manual-scroll,
+.manual-scroll .viewport,
+.manual-scroll > .viewport > .content {
+    -fx-background-color: transparent;
+}
+
+.manual-scroll {
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.manual-scroll > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.manual-scroll > .scroll-bar:vertical > .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.22);
+    -fx-background-radius: 6;
+}

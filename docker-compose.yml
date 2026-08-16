@@ -1,0 +1,16 @@
+services:
+  taxiracer:
+    build: .
+    image: taxiracer:latest
+    container_name: taxiracer
+    ports:
+      # Browse to http://localhost:8080/ to play.
+      - "8080:8080"
+    volumes:
+      # Saves live on the host, so progress survives rebuilding the image.
+      - ./saves:/app/saves
+    environment:
+      # The screen is the game window (1080x720) plus room for the title bar.
+      SCREEN_W: "1120"
+      SCREEN_H: "800"
+    stop_grace_period: 5s

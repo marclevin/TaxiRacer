@@ -1,4 +1,29 @@
-1
-1
-1
-1
+# Taxi Racer - EASY
+# A quiet Sunday shift. Drive cleanly and the police fall behind, so mistakes cost
+# you progress rather than the run.
+#
+# Every value is optional; anything left out uses the built-in default.
+#
+# The numbers are balanced as a metre budget against policeStart. On this profile:
+#   one pothole  ~=  45m  of the 1080m gap
+#   one fare     ~=  30m
+#   one body     ~= 176m   (so roughly six before it is fatal)
+
+potholes        = 1,1,1,1
+
+# The chase. Negative drift means clean driving pulls you away from the police.
+policeStart     = 1080
+cleanDrift      = -0.5
+slowGain        = 2.0
+nosDrift        = -12.0
+
+# The street.
+maxFares        = 10
+maxJaywalkers   = 2
+spawnSteps      = 60
+jaywalkerChance = 0.18
+
+# Running someone down: an instant hand-out, then a spell of furious pursuit.
+splatPenalty    = 80
+enrageSteps     = 240
+enrageGain      = 0.9
