@@ -1,0 +1,16 @@
+# Keep the build context small and free of host-specific artefacts.
+.git
+.github
+.vscode
+.VSCodeCounter
+.javafx
+bin
+build
+target
+saves
+docs
+*.md
+*.ps1
+*.sh
+!docker/entrypoint.sh
+save.sav

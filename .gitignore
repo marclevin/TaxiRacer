@@ -1,0 +1,14 @@
+# Build output
+bin/
+build/
+target/
+
+# Locally downloaded JavaFX SDK (play.ps1 / play.sh fetch this on demand)
+.javafx/
+
+# Player profiles
+saves/
+
+# Tooling noise
+.VSCodeCounter/
+*.class
