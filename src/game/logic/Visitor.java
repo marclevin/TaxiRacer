@@ -1,5 +1,6 @@
 package game.logic;
 
+import game.display.models.Jaywalker;
 import game.display.models.Passenger;
 import game.display.models.Police;
 import game.display.models.Pothole;
@@ -11,7 +12,8 @@ import game.display.models.Road;
 public interface Visitor {
     public void visit(Pothole pothole);
     public void visit(Passenger passenger);
+    public void visit(Jaywalker jaywalker);
     public void visit(Road road);
     public void visit(Police police);
-    
+
 }
