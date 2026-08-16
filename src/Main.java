@@ -1,15 +1,21 @@
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import game.display.models.Taxi;
 import game.display.view.GameCanvas;
 import game.logic.InputHandler;
+import game.logic.UpgradeShop;
+import game.utility.Assets;
 import game.utility.DifficultyLoader;
+import game.utility.DifficultyProfile;
 import game.utility.EDifficulty;
 import game.utility.ESettings;
+import game.utility.Sounds;
 import game.utility.TaxiSaver;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -19,576 +25,775 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * Main Class
+ * Main Class: builds the menus and wires them to the game canvas.
  */
 public class Main extends Application {
 
-    private File save_game = null;
-    private Font small_font = new Font("Verdana", 20);
-    private Font large_font = new Font("Verdana", 40);
-    private GameCanvas gc;
+    private static final String TITLE = "Taxi Racer";
+    private static final double WIDTH = ESettings.SCENE_WIDTH.getVal();
+    private static final double HEIGHT = ESettings.SCENE_HEIGHT.getVal();
+
+    private Stage stage;
+    private GameCanvas canvas;
     private EDifficulty difficulty = EDifficulty.EASY;
+
+    /** Set when the player opens or saves a profile by hand from the menu bar. */
+    private File chosenProfile = null;
+
+    // Scenes
+    private Scene menuScene;
+    private Scene garageScene;
+    private Scene canvasScene;
+    private Scene manualScene;
+    private Scene difficultyScene;
+
+    // Nodes that are refreshed as the player's state changes
+    private final Button continueButton = new Button("Continue game");
+    private final Text profileText = new Text();
+    private final Text walletText = new Text();
+    private final Text faresText = new Text();
+    private final Text victoryText = new Text();
+    private final Button engineButton = new Button();
+    private final Button wheelButton = new Button();
+    private final Button nosButton = new Button();
+    private final Button capacityButton = new Button();
+    private final Text engineText = new Text();
+    private final Text wheelText = new Text();
+    private final Text nosText = new Text();
+    private final Text capacityText = new Text();
+    private final Text difficultyText = new Text();
+    private final Button easyButton = new Button(EDifficulty.EASY.getLabel());
+    private final Button mediumButton = new Button(EDifficulty.MEDIUM.getLabel());
+    private final Button hardButton = new Button(EDifficulty.HARD.getLabel());
 
     /**
      * Main function, launches application.
+     *
      * @param args command line arguments
      */
     public static void main(String[] args) {
         launch(args);
-
     }
 
     /**
-     * This function gets the difficulty selected based on {@code difficulty}
-     * @return File of the selected difficulty
-     */
-    private File getDifficultyFile() {
-        File easy_file = null;
-        File medium_file = null;
-        File hard_file = null;
-
-        // DIFFICULTY FILES
-        easy_file = new File("dat\\easy.txt");
-        medium_file = new File("dat\\medium.txt");
-        hard_file = new File("dat\\hard.txt");
-        if (difficulty == EDifficulty.EASY) {
-            return easy_file;
-        } else if (difficulty == EDifficulty.MEDIUM) {
-            return medium_file;
-        } else if (difficulty == EDifficulty.HARD) {
-            return hard_file;
-        }
-        return null;
-    }
-
-    /**
-     * This function returns the cost of the next upgrade for the Engine
-     * @return cost of the next upgrade for the Engine
-     */
-    private double getEngineUpgradeCost() {
-        double cost = 0;
-        switch (InputHandler.getTaxi().getEngineUpgrade()) {
-            case 0:
-                cost = 100.0;
-                break;
-            case 1:
-                cost = 200.0;
-                break;
-            case 2:
-                cost = 500.0;
-            default:
-                break;
-        }
-        return cost;
-    }
-
-    /**
-     * This function returns the cost of the next upgrade for Wheels
-     * @return the cost of the next upgrade for Wheels
-     */
-    private double getWheelUpgradeCost() {
-        double cost = 0;
-        switch (InputHandler.getTaxi().getPotholeResistance()) {
-            case 0:
-                cost = 100.0;
-                break;
-            case 1:
-                cost = 250.0;
-                break;
-            case 2:
-                cost = 700.0;
-            default:
-                break;
-        }
-        return cost;
-    }
-
-    /**
-     * This function starts the application display
+     * This function starts the application display.
+     *
+     * @param stg the primary stage supplied by JavaFX
      */
     @Override
-    public void start(Stage stg) throws Exception {
+    public void start(Stage stg) {
+        this.stage = stg;
 
-        // GROUPS
-        Group main_root = new Group();
-        Group instruct_root = new Group();
-        Group game_root = new Group();
-        Group canvas_root = new Group();
-        Group difficulty_root = new Group();
+        DifficultyLoader.loadDifficulty(difficulty);
+        // Picks up whatever is in res/sound; the game stays silent if that is nothing.
+        Sounds.load();
 
-        // BUTTONS
-        Button start_btn = new Button("New game...");
-        Button continue_btn = new Button("Continue game...");
-        Button manual_btn = new Button("How to play..");
-        Button exit_btn = new Button("Exit..");
-        Button difficulty_btn = new Button("Change difficulty..");
-        Button back_manual_btn = new Button("Go Back..");
-        Button back_game_btn = new Button("Go Back..");
-        Button back_diff_btn = new Button("Go Back..");
-        Button start_game_btn = new Button("START");
-        Button upgrade_engine_btn = new Button("Upgrade Engine");
-        Button purchase_NOS_btn = new Button("Purchase NOS");
-        Button refresh_stats_btn = new Button("Refresh cash & passenger info");
-        Button upgrade_wheels_btn = new Button("Upgrade Wheels");
-        Button easy_btn = new Button("Easy");
-        Button medium_btn = new Button("Medium");
-        Button hard_btn = new Button("Hard");
+        canvas = new GameCanvas(WIDTH, HEIGHT);
+        InputHandler.setCanvas(canvas);
+        InputHandler.setMainStage(stg);
+        // Progress is banked the instant a run ends, so closing the window never costs a fare.
+        canvas.setOnRunEnded(this::bankProgress);
 
-        VBox main_box = new VBox();
-        VBox manual_box = new VBox();
-        VBox difficulty_box = new VBox();
-        VBox game_box = new VBox();
-        VBox canvas_box = new VBox();
+        menuScene = buildMenuScene();
+        garageScene = buildGarageScene();
+        manualScene = buildManualScene();
+        difficultyScene = buildDifficultyScene();
+        canvasScene = buildCanvasScene();
 
-        HBox control_box = new HBox();
-        HBox engine_box = new HBox();
-        HBox wheel_box = new HBox();
-        HBox NOS_box = new HBox();
+        InputHandler.setUpgradeScene(garageScene);
 
-        // BUTTON PROPERTIES
-        continue_btn.setDisable(true);
+        // Pick up where the player left off, importing an original-format save if present.
+        Taxi saved = TaxiSaver.autoLoad();
+        if (saved != null) {
+            InputHandler.setTaxi(saved);
+        }
+        refreshMenu();
 
-        // GAME CANVAS CREATION
-        gc = new GameCanvas(ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
+        stg.setScene(menuScene);
+        stg.setTitle(TITLE);
+        stg.setResizable(false);
+        stg.setOnCloseRequest(event -> bankProgress());
+        stg.show();
+    }
 
-        // TEXT
-        Text instruct = new Text(
-                """
-                        Welcome to Taxi Racer V0.1
-                        In this game, your objective is to evade the police and collect passengers.
-                        The police will constantly pursue you.
-                        You can also buy upgrades to increase your speed and avoid the police.
-                        You recieve money from picking up passengers.
-                        You can press the UP and DOWN arrow(s) to move up and down between lanes.
-                        You can press the LEFT and RIGHT arrow(s) to move left and right to try and get more passengers.
-                        When you are near a passenger, press SPACE to attempt to pick them up.
-                        Don't worry if you lose initially, to complete the game you need to aquire every upgrade.
+    // ------------------------------------------------------------------
+    // Scenes
+    // ------------------------------------------------------------------
 
+    /**
+     * Builds the main menu.
+     *
+     * @return the main menu scene.
+     */
+    private Scene buildMenuScene() {
+        Text title = styled(new Text(TITLE), "title");
+        Text tagline = styled(new Text("Collect fares. Dodge potholes. Outrun the law."), "muted-text");
 
-                        To load a game, please use the menu bar on the previous screen to select a save file.
-                        If a valid save file has been selected, the continue game button will become activated.
-                        Press the 'New Game' button to start a new game.
+        Button newGame = new Button("New game");
+        newGame.getStyleClass().add("primary-button");
+        newGame.setOnAction(e -> startNewGame());
 
-                        Have fun!
+        continueButton.setOnAction(e -> openGarage());
 
-                            """);
+        Button manual = new Button("How to play");
+        manual.setOnAction(e -> stage.setScene(manualScene));
 
-        Text selectedFile_Text = new Text("File Selected: ");
-        Text titleText = new Text("Taxi Racer V0.1");
-        Text gameText = new Text(
-                "You can purchase upgrades on this screen.\n Press START to attempt a run.\nPressing the back button will automatically create a save file.\nPress the refresh button to refresh the cash and passenger info.");
-        Text engineUpgradeText = new Text(
-                "Upgrade your engine to increase your speed.\nPress the button to purchase an upgrade.");
-        Text NOSPurchaseText = new Text(
-                "Purchase illegal nitrogen (NOS) to rapidly increase your speed. \n(Adds ability to boost speed for a moment. press E to use !!!ONE TIME USE ONLY!!!)\nPress the button to purchase an upgrade.");
-        Text WheelUpgradeText = new Text(
-                "Upgrade your wheels to increase your ability to not be destroyed by potholes\nPress the button to purchase an upgrade.");
-        Text walletInfo = new Text();
-        Text passengerInfo = new Text();
-        Text difficultyText = new Text("Click the buttons below to change difficulty.\nCurrent Difficulty: Easy");
+        Button difficultyBtn = new Button("Change difficulty");
+        difficultyBtn.setOnAction(e -> openDifficulty());
 
-        // TEXT PROPERTIES
-        selectedFile_Text.setFont(small_font);
-        selectedFile_Text.setVisible(false);
-        titleText.setFont(large_font);
-        gameText.setFont(small_font);
-        instruct.setX(ESettings.SCENE_WIDTH.getVal() / 2);
-        instruct.setFont(small_font);
+        Button exit = new Button("Exit");
+        exit.setOnAction(e -> quit());
 
-        // DIFFICULTY SETUP
-        // By default we will load easy.
-        this.difficulty = EDifficulty.EASY;
-        DifficultyLoader.loadDifficulty(getDifficultyFile());
+        styled(profileText, "muted-text");
 
-        // Menu (javafx) setup
-        MenuBar mb = new MenuBar();
-        Menu menu = new Menu("File..");
-        mb.getMenus().add(menu);
-        MenuItem menuItem = new MenuItem("Open");
-        menu.getItems().add(menuItem);
+        VBox column = column(24, title, tagline, profileText, newGame, continueButton, manual, difficultyBtn, exit);
+        column.setPadding(new Insets(40));
 
-        // File Chooser for opening a save file here
-        menuItem.setOnAction(value -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Save File");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Save Game Files", "*.sav"));
+        BorderPane layout = new BorderPane();
+        layout.setTop(buildMenuBar());
+        layout.setCenter(column);
+
+        return scene(layout);
+    }
+
+    /**
+     * Builds the menu bar used to import and export profiles by hand.
+     *
+     * @return the configured menu bar.
+     */
+    private MenuBar buildMenuBar() {
+        MenuItem open = new MenuItem("Open profile...");
+        open.setOnAction(e -> openProfile());
+
+        MenuItem saveAs = new MenuItem("Save profile as...");
+        saveAs.setOnAction(e -> saveProfileAs());
+
+        Menu file = new Menu("File");
+        file.getItems().addAll(open, saveAs);
+
+        MenuBar bar = new MenuBar();
+        bar.getMenus().add(file);
+        return bar;
+    }
+
+    /**
+     * Builds the garage, where fares are spent on upgrades.
+     *
+     * @return the garage scene.
+     */
+    private Scene buildGarageScene() {
+        Text heading = styled(new Text("The Garage"), "heading");
+        Text blurb = styled(new Text(
+                "Spend your fares here, then press START to take the taxi out.\n"
+                        + "Going back to the menu saves your progress automatically."),
+                "body-text");
+        blurb.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        styled(walletText, "money-text");
+        styled(faresText, "fares-text");
+        styled(victoryText, "victory-text");
+        victoryText.setVisible(false);
+        victoryText.setManaged(false);
+
+        engineButton.getStyleClass().add("buy-button");
+        engineButton.setOnAction(e -> buy(UpgradeShop::buyEngine));
+        wheelButton.getStyleClass().add("buy-button");
+        wheelButton.setOnAction(e -> buy(UpgradeShop::buyWheels));
+        nosButton.getStyleClass().add("buy-button");
+        nosButton.setOnAction(e -> buy(UpgradeShop::buyNos));
+        capacityButton.getStyleClass().add("buy-button");
+        capacityButton.setOnAction(e -> buy(UpgradeShop::buyCapacity));
+
+        // Two by two: four upgrades stacked in a column would not fit the window.
+        GridPane upgrades = new GridPane();
+        upgrades.setHgap(16);
+        upgrades.setVgap(14);
+        upgrades.setAlignment(Pos.CENTER);
+        upgrades.add(upgradeCard(capacityText, capacityButton), 0, 0);
+        upgrades.add(upgradeCard(engineText, engineButton), 1, 0);
+        upgrades.add(upgradeCard(wheelText, wheelButton), 0, 1);
+        upgrades.add(upgradeCard(nosText, nosButton), 1, 1);
+
+        Button start = new Button("START RUN");
+        start.getStyleClass().add("primary-button");
+        start.setOnAction(e -> startRun());
+
+        Button back = new Button("Back to menu");
+        back.setOnAction(e -> leaveGarage());
+
+        HBox controls = new HBox(20, start, back);
+        controls.setAlignment(Pos.CENTER);
+
+        VBox column = column(16, heading, blurb, walletText, faresText, victoryText, upgrades, controls);
+        column.setPadding(new Insets(28, 40, 28, 40));
+
+        return scene(column);
+    }
+
+    /**
+     * Builds one upgrade row: a description on the left, the purchase button on the right.
+     *
+     * @param description the upgrade blurb, refreshed with its live price
+     * @param button      the purchase button
+     * @return the assembled row.
+     */
+    private VBox upgradeCard(Text description, Button button) {
+        styled(description, "body-text");
+
+        TextFlow flow = new TextFlow(description);
+        flow.setMaxWidth(400);
+        flow.setPrefHeight(78);
+
+        VBox card = new VBox(10, flow, button);
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setPrefWidth(440);
+        card.getStyleClass().add("card");
+        return card;
+    }
+
+    /**
+     * Builds the instructions screen.
+     *
+     * @return the manual scene.
+     */
+    private Scene buildManualScene() {
+        Text heading = styled(new Text("How to play"), "heading");
+        Text body = styled(new Text("""
+                You drive a taxi. The police are behind you and they are patient.
+
+                The taxi holds the middle of the screen and the city comes to you. All you
+                choose is which of the four lanes to be in.
+
+                PICK UP.  Fares wait on the two pavements, so you have to be in an outside
+                lane to reach them. Press SPACE alongside one and they climb in through the
+                windows, where you can see how full you are.
+
+                WHERE THEY ARE GOING.  Every fare tells you how far they want to go as they
+                get in, and the lamp under their seat follows the trip: blue at the start,
+                amber as they get close, green once you are at their stop, red once you have
+                driven them well past it. The gauge in the corner says the same thing, one
+                pip per seat.
+
+                DROP OFF.  A fare does not pay until you drop them off, and what they pay
+                depends on where. On the green they pay well over the meter; let them out
+                too soon, or miles too late, and they pay a fraction of it. Once the taxi is
+                full, press SPACE to pull over, then mash SPACE to let them out one by one.
+                Whoever is nearest their stop always goes first, so the money is best in the
+                first seconds of a stop. You are stationary the whole time and the police
+                close in fast. Change lane to pull away early.
+
+                Do not want to wait until you are full? Press D to pull over on a half load
+                and bank what you are carrying - ideally the moment the lights go green.
+
+                The money in the back is not yours until it is out of the taxi. Get caught
+                carrying it and you lose the lot. A bigger taxi turns several stops into one.
+
+                Watch for people crossing the road. Hit one and you wear most of them on
+                your bonnet for a few seconds, the police close a large part of the gap
+                instantly, and they drive furious for a while afterwards. The game keeps
+                count.
+
+                THE CHASE.  Once the police are close enough to see, they lean into whatever
+                lane you take, surge forward and drop back rather than closing steadily, and
+                the officer in the back window leans out with a pistol. A reticle shows the
+                lane the shot is settling on, and it locks on for the last part of the aim -
+                change lane late and the round goes wide. Take one in a tyre and you limp,
+                which is the moment they are waiting for.
+
+                Finish the game by buying every upgrade.
+
+                CONTROLS
+                  UP / DOWN        change lane
+                  SPACE            pick up a fare; when full, drop them off
+                  D                pull over early to bank a half load
+                  E                fire NOS (one canister per purchase)
+                  P                pause
+                  R                restart the run
+                  ESC / ENTER      return to the garage
+
+                Your progress saves itself. Use File > Open profile to load a save file
+                from somewhere else, or File > Save profile as to keep a copy.
+                """), "body-text");
+
+        Button back = new Button("Go back");
+        back.setOnAction(e -> stage.setScene(menuScene));
+
+        // The window is a fixed 720px and the instructions are longer than that, so they
+        // scroll rather than running off the bottom edge where nobody would ever find them.
+        ScrollPane scroller = new ScrollPane(body);
+        scroller.setFitToWidth(true);
+        scroller.setPrefViewportHeight(HEIGHT - 190);
+        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroller.getStyleClass().add("manual-scroll");
+
+        VBox column = column(18, heading, scroller, back);
+        column.setPadding(new Insets(24, 60, 24, 60));
+        return scene(column);
+    }
+
+    /**
+     * Builds the difficulty picker.
+     *
+     * @return the difficulty scene.
+     */
+    private Scene buildDifficultyScene() {
+        Text heading = styled(new Text("Difficulty"), "heading");
+        styled(difficultyText, "body-text");
+
+        easyButton.setOnAction(e -> setDifficulty(EDifficulty.EASY));
+        mediumButton.setOnAction(e -> setDifficulty(EDifficulty.MEDIUM));
+        hardButton.setOnAction(e -> setDifficulty(EDifficulty.HARD));
+
+        HBox choices = new HBox(20, easyButton, mediumButton, hardButton);
+        choices.setAlignment(Pos.CENTER);
+
+        Button back = new Button("Go back");
+        back.setOnAction(e -> stage.setScene(menuScene));
+
+        VBox column = column(24, heading, difficultyText, choices, back);
+        column.setPadding(new Insets(40));
+        return scene(column);
+    }
+
+    /**
+     * Builds the scene that hosts the game canvas.
+     *
+     * @return the gameplay scene.
+     */
+    private Scene buildCanvasScene() {
+        StackPane holder = new StackPane(canvas);
+        holder.setPrefSize(WIDTH, HEIGHT);
+
+        Group root = new Group(holder);
+        Scene gameScene = new Scene(root, WIDTH, HEIGHT);
+        applyStylesheet(gameScene);
+        gameScene.setOnKeyPressed(InputHandler::processKeyPress);
+        return gameScene;
+    }
+
+    // ------------------------------------------------------------------
+    // Actions
+    // ------------------------------------------------------------------
+
+    /**
+     * Starts a brand new career, confirming first if one is already under way.
+     */
+    private void startNewGame() {
+        if (InputHandler.getTaxi() != null) {
+            ButtonType yes = new ButtonType("Start over");
+            ButtonType cancel = new ButtonType("Cancel");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "You already have a career in progress.\n"
+                            + "Starting a new game will overwrite your saved profile.",
+                    yes, cancel);
+            alert.setTitle("New game");
+            alert.setHeaderText("Start a new game?");
+
+            Optional<ButtonType> answer = alert.showAndWait();
+            if (answer.isEmpty() || answer.get() != yes) {
+                return;
+            }
+        }
+
+        InputHandler.setTaxi(null);
+        DifficultyLoader.loadDifficulty(difficulty);
+        canvas.initCanvas();
+        bankProgress();
+        openGarage();
+    }
+
+    /**
+     * Shows the garage, refreshing the prices and the wallet first.
+     */
+    private void openGarage() {
+        DifficultyLoader.loadDifficulty(difficulty);
+        if (InputHandler.getTaxi() == null) {
+            canvas.initCanvas();
+        }
+        refreshGarage();
+        stage.setScene(garageScene);
+    }
+
+    /**
+     * Leaves the garage for the main menu, saving on the way out.
+     */
+    private void leaveGarage() {
+        bankProgress();
+        refreshMenu();
+        stage.setScene(menuScene);
+    }
+
+    /**
+     * Takes the taxi out for a run.
+     */
+    private void startRun() {
+        bankProgress();
+        stage.setScene(canvasScene);
+        canvas.initCanvas();
+        canvas.runAnimator();
+        canvas.requestFocus();
+    }
+
+    /**
+     * Applies a purchase and refreshes the garage.
+     *
+     * @param purchase the shop operation to attempt
+     */
+    private void buy(java.util.function.Predicate<Taxi> purchase) {
+        Taxi taxi = InputHandler.getTaxi();
+        if (taxi == null) {
+            return;
+        }
+        purchase.test(taxi);
+        bankProgress();
+        refreshGarage();
+    }
+
+    /**
+     * Changes the difficulty and reloads its pothole layout.
+     *
+     * @param selected the difficulty chosen by the player
+     */
+    private void setDifficulty(EDifficulty selected) {
+        this.difficulty = selected;
+        DifficultyLoader.loadDifficulty(selected);
+        refreshDifficulty();
+    }
+
+    /**
+     * Shows the difficulty picker.
+     */
+    private void openDifficulty() {
+        refreshDifficulty();
+        stage.setScene(difficultyScene);
+    }
+
+    /**
+     * Writes the player's progress to the automatic profile, and to a hand-picked file if
+     * one has been chosen.
+     */
+    private void bankProgress() {
+        Taxi taxi = InputHandler.getTaxi();
+        if (taxi == null) {
+            return;
+        }
+        TaxiSaver.autoSave(taxi);
+        if (chosenProfile != null) {
+            TaxiSaver.save(taxi, chosenProfile);
+        }
+    }
+
+    /**
+     * Saves and exits.
+     */
+    private void quit() {
+        bankProgress();
+        Platform.exit();
+    }
+
+    /**
+     * Loads a profile chosen by the player.
+     */
+    private void openProfile() {
+        File selected = chooser("Open profile").showOpenDialog(stage);
+        if (selected == null) {
+            return;
+        }
+
+        Taxi loaded = TaxiSaver.load(selected);
+        if (loaded == null) {
+            Alert bad = new Alert(Alert.AlertType.ERROR,
+                    selected.getName() + " is not a Taxi Racer save file.");
+            bad.setTitle("Could not open profile");
+            bad.setHeaderText("Invalid save file");
+            bad.showAndWait();
+            return;
+        }
+
+        chosenProfile = selected;
+        InputHandler.setTaxi(loaded);
+        bankProgress();
+        refreshMenu();
+    }
+
+    /**
+     * Exports the current profile to a file chosen by the player.
+     */
+    private void saveProfileAs() {
+        Taxi taxi = InputHandler.getTaxi();
+        if (taxi == null) {
+            Alert none = new Alert(Alert.AlertType.INFORMATION,
+                    "Start a game before saving a profile.");
+            none.setTitle("Nothing to save");
+            none.setHeaderText(null);
+            none.showAndWait();
+            return;
+        }
+
+        File selected = chooser("Save profile as").showSaveDialog(stage);
+        if (selected == null) {
+            return;
+        }
+        chosenProfile = selected;
+        TaxiSaver.save(taxi, selected);
+        refreshMenu();
+    }
+
+    /**
+     * Builds a file chooser pointed at the save directory.
+     *
+     * @param title the dialog title
+     * @return a configured file chooser.
+     */
+    private FileChooser chooser(String title) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Save Game Files", "*.sav"));
+
+        File start = TaxiSaver.defaultSaveFile().getAbsoluteFile().getParentFile();
+        if (start != null && start.isDirectory()) {
+            fileChooser.setInitialDirectory(start);
+        } else {
             try {
                 fileChooser.setInitialDirectory(new File(".").getCanonicalFile());
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
+                // A missing start directory just means the chooser opens wherever it likes.
             }
-            File selectedFile = fileChooser.showOpenDialog(stg);
-            if (selectedFile != null) {
-                save_game = selectedFile;
-                selectedFile_Text.setText("File Selected: " + selectedFile.getName());
-                selectedFile_Text.setVisible(true);
-                continue_btn.setDisable(false);
-                TaxiSaver.setFile(selectedFile);
-                Taxi temp = TaxiSaver.getTaxi();
-                if (temp == null) {
-                    Alert badTaxi = new Alert(Alert.AlertType.ERROR, "Invalid save file");
-                    badTaxi.setTitle("Error");
-                    badTaxi.showAndWait().ifPresent(rs -> {
-                        if (rs == ButtonType.OK) {
-                            selectedFile_Text.setVisible(false);
-                            continue_btn.setDisable(true);
-                        }
-                    });
+        }
+        return fileChooser;
+    }
 
-                } else {
-                    InputHandler.setTaxi(temp);
-                    continue_btn.setDisable(false);
-                }
-            }
-        });
+    // ------------------------------------------------------------------
+    // Refresh
+    // ------------------------------------------------------------------
 
-        // Main Menu Setup
+    /**
+     * Updates the main menu to match the player's saved state.
+     */
+    private void refreshMenu() {
+        Taxi taxi = InputHandler.getTaxi();
+        continueButton.setDisable(taxi == null);
 
+        if (taxi == null) {
+            profileText.setText("No career started yet.");
+            return;
+        }
+        String location = chosenProfile != null
+                ? chosenProfile.getName()
+                : TaxiSaver.defaultSaveFile().getPath();
+        profileText.setText(String.format("Career: R%.2f banked, %d fares driven  (%s)",
+                taxi.getWallet(), taxi.getCareerPassengers(), location));
+    }
 
-        // Scene setup
-        Scene instruct_scene = new Scene(instruct_root, ESettings.SCENE_WIDTH.getVal(),
-                ESettings.SCENE_HEIGHT.getVal());
-        Scene menu_scene = new Scene(main_root, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
+    /**
+     * Updates every price, label and button in the garage.
+     *
+     * <p>
+     * This runs on entry and after each purchase; the original required the player to press
+     * a refresh button to see their own wallet.
+     * </p>
+     */
+    private void refreshGarage() {
+        Taxi taxi = InputHandler.getTaxi();
+        if (taxi == null) {
+            return;
+        }
 
-        Scene difficulty_scene = new Scene(difficulty_root, ESettings.SCENE_WIDTH.getVal(),
-                ESettings.SCENE_HEIGHT.getVal());
-        Scene game_scene = new Scene(game_root, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
+        walletText.setText(String.format("Wallet: R%.2f", taxi.getWallet()));
+        faresText.setText(String.format("Fares driven: %d          Pedestrians slimed: %d",
+                taxi.getCareerPassengers(), taxi.getCareerSlimed()));
 
-        // Root setup
-        game_root.getChildren().addAll(game_box);
-        instruct_root.getChildren().add(manual_box);
-        main_root.getChildren().add(main_box);
-        difficulty_root.getChildren().add(difficulty_box);
+        refreshCapacity(taxi);
 
-        // Game Menu Control Setup:
+        refreshUpgrade(engineText, engineButton,
+                "Engine: get back to speed faster after a stop.",
+                taxi.getEngineUpgrade(), UpgradeShop.engineCost(taxi), taxi.getWallet(), "Engine");
 
-        // Manual Box Setup
-        manual_box.setAlignment(Pos.CENTER);
-        manual_box.prefWidthProperty().bind(stg.widthProperty());
-        manual_box.setSpacing(25);
-        manual_box.getChildren().addAll(instruct, back_manual_btn);
+        refreshUpgrade(wheelText, wheelButton,
+                "Wheels: shrug off potholes instead of slowing.",
+                taxi.getPotholeResistance(), UpgradeShop.wheelCost(taxi), taxi.getWallet(), "Wheels");
 
-        // Main Menu Box Setup:
-        main_box.getChildren().addAll(mb, titleText, selectedFile_Text, start_btn, continue_btn, manual_btn,
-                difficulty_btn,
-                exit_btn);
-        main_box.setAlignment(Pos.CENTER);
-        main_box.prefWidthProperty().bind(stg.widthProperty());
-        main_box.setSpacing(25);
+        refreshNos(taxi);
 
-        // Difficulty Box Setup
-        difficulty_box.setAlignment(Pos.CENTER);
-        difficulty_box.getChildren().addAll(difficultyText, easy_btn, medium_btn, hard_btn, back_diff_btn);
-        difficulty_box.prefWidthProperty().bind(stg.widthProperty());
-        difficulty_box.setSpacing(25);
+        boolean complete = taxi.isFullyUpgraded();
+        victoryText.setText("Every upgrade bought - the streets are yours. "
+                + "Now go and land 100 fares in a single run.");
+        victoryText.setVisible(complete);
+        victoryText.setManaged(complete);
+    }
 
-        // Wheel Box Setup
-        wheel_box.setAlignment(Pos.CENTER);
-        wheel_box.setSpacing(25);
-        wheel_box.getChildren().addAll(WheelUpgradeText, upgrade_wheels_btn);
+    /**
+     * Updates one upgrade row.
+     *
+     * @param label       the description text node
+     * @param button      the purchase button
+     * @param blurb       what the upgrade does
+     * @param level       how many levels are already owned
+     * @param cost        the price of the next level, or {@link UpgradeShop#UNAVAILABLE}
+     * @param wallet      the player's balance
+     * @param buttonLabel the noun used on the button
+     */
+    private void refreshUpgrade(Text label, Button button, String blurb, int level, double cost,
+            double wallet, String buttonLabel) {
 
-        // Control Box setup
-        control_box.setAlignment(Pos.CENTER);
-        control_box.setSpacing(25);
-        control_box.getChildren().addAll(start_game_btn, refresh_stats_btn, back_game_btn);
+        if (cost == UpgradeShop.UNAVAILABLE) {
+            label.setText(blurb + "\nFully upgraded.");
+            button.setText(buttonLabel + " " + level + "/" + Taxi.MAX_UPGRADE);
+            button.setDisable(true);
+            return;
+        }
 
-        // Engine Box setup
-        engine_box.setAlignment(Pos.CENTER);
-        engine_box.getChildren().addAll(engineUpgradeText, upgrade_engine_btn);
-        engine_box.setSpacing(50);
+        label.setText(String.format("%s%nNext level costs R%.2f", blurb, cost));
+        button.setText(String.format("Upgrade %s (%d/%d)", buttonLabel.toLowerCase(), level,
+                Taxi.MAX_UPGRADE));
+        button.setDisable(wallet < cost);
+    }
 
-        // NOS Box setup
-        NOS_box.setAlignment(Pos.CENTER);
-        NOS_box.getChildren().addAll(NOSPurchaseText, purchase_NOS_btn);
-        NOS_box.setSpacing(50);
+    /**
+     * Updates the capacity row, which shows the seat count rather than a bare level.
+     *
+     * @param taxi the player's taxi
+     */
+    private void refreshCapacity(Taxi taxi) {
+        int level = taxi.getCapacityUpgrade();
+        int seats = taxi.getCapacity();
+        double cost = UpgradeShop.capacityCost(taxi);
 
-        // Info to display to the user.
-        walletInfo.setFill(Color.GREEN);
-        walletInfo.setText("");
-        passengerInfo.setFill(Color.DARKRED);
-        passengerInfo.setText("");
+        // Lines are kept short by hand: the card is 400px wide and re-wrapping mid-sentence
+        // reads as a typo.
+        String blurb = String.format(
+                "Seats: %d fares per load.%nFares only pay once you drop them off.", seats);
 
-        // Game Menu control flow.
-        game_box.getChildren().addAll(gameText, walletInfo, passengerInfo, engine_box, NOS_box, wheel_box, control_box);
-        game_box.prefWidthProperty().bind(stg.widthProperty());
-        game_box.setSpacing(25);
-        game_box.setAlignment(Pos.CENTER);
+        if (cost == UpgradeShop.UNAVAILABLE) {
+            capacityText.setText(blurb + "\nFull size - no more seats to fit.");
+            capacityButton.setText(String.format("Seats %d (%d/%d)", seats, level, Taxi.MAX_UPGRADE));
+            capacityButton.setDisable(true);
+            return;
+        }
 
-        // End Setup
+        capacityText.setText(String.format("%s%nNext row of seats takes you to %d, for R%.2f",
+                blurb, Taxi.capacityAtLevel(level + 1), cost));
+        capacityButton.setText(String.format("Add seats (%d/%d)", level, Taxi.MAX_UPGRADE));
+        capacityButton.setDisable(taxi.getWallet() < cost);
+    }
 
-        // Canvas Screen Setup:
-        canvas_box.setAlignment(Pos.CENTER);
-        canvas_box.getChildren().add(gc);
-        canvas_box.prefWidthProperty().bind(stg.widthProperty());
-        canvas_root.getChildren().add(canvas_box);
-        Scene canvas_scene = new Scene(canvas_root, ESettings.SCENE_WIDTH.getVal(), ESettings.SCENE_HEIGHT.getVal());
-        canvas_scene.setOnKeyPressed(InputHandler::processKeyPress);
-        // End Setup
+    /**
+     * Updates the NOS row, which behaves differently because the canister is consumable.
+     *
+     * @param taxi the player's taxi
+     */
+    private void refreshNos(Taxi taxi) {
+        String blurb = "NOS: one burst of speed that loses the police.\n"
+                + "Press E during a run to use it.";
 
-        // Game Menu: Refresh Stats Button
-        refresh_stats_btn.setOnAction(value -> {
-            if (InputHandler.getTaxi() == null) {
-                walletInfo.setText("");
-                passengerInfo.setText("");
-                return;
-            }
-            if (InputHandler.getTaxi().hasNOS()) {
-                purchase_NOS_btn.setDisable(true);
-            } else {
-                purchase_NOS_btn.setDisable(false);
-            }
-            walletInfo.setText(String.format("Cash avaliable: %.2f", InputHandler.getTaxi().getWallet()));
-            upgrade_engine_btn
-                    .setText(String.format("Upgrade Engine (%d/3)", InputHandler.getTaxi().getEngineUpgrade()));
-            upgrade_wheels_btn
-                    .setText(String.format("Upgrade Wheels (%d/3)", InputHandler.getTaxi().getPotholeResistance()));
-            engineUpgradeText.setText(String.format(
-                    "Upgrade your engine to increase your speed.\nPress the button to purchase an upgrade.\nCost: %.2f",
-                    getEngineUpgradeCost()));
-            WheelUpgradeText.setText(String.format(
-                    "Upgrade your wheels to increase your ability to not be destroyed by potholes\nPress the button to purchase an upgrade.\nCost: %.2f",
-                    getWheelUpgradeCost()));
-            passengerInfo.setText(
-                    String.format("Total Passengers picked up: %d", InputHandler.getTaxi().getCareerPassengers()));
-            if (InputHandler.getTaxi().getEngineUpgrade() != 3) {
-                upgrade_engine_btn.setDisable(false);
-            } else {
-                upgrade_engine_btn.setDisable(true);
-            }
-            if (InputHandler.getTaxi().getPotholeResistance() != 3) {
-                upgrade_wheels_btn.setDisable(false);
-            } else {
-                upgrade_wheels_btn.setDisable(true);
-            }
+        if (taxi.hasNOS()) {
+            nosText.setText(blurb + "\nA canister is loaded and ready.");
+            nosButton.setText("NOS loaded");
+            nosButton.setDisable(true);
+            return;
+        }
 
-        });
+        nosText.setText(String.format("%s%nA canister costs R%.2f", blurb, UpgradeShop.NOS_COST));
+        nosButton.setText("Buy NOS");
+        nosButton.setDisable(taxi.getWallet() < UpgradeShop.NOS_COST);
+    }
 
-        // Game Menu: Upgrade Engine Button
-        upgrade_engine_btn.setOnAction(value -> {
-            if (InputHandler.getTaxi() == null) {
-                return;
-            }
-            double cost = getEngineUpgradeCost();
-            if (InputHandler.getTaxi().getWallet() >= cost) {
-                InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
-                InputHandler.getTaxi().setEngineUpgrade(InputHandler.getTaxi().getEngineUpgrade() + 1);
-            } else {
-                upgrade_engine_btn.setText("Insufficient Funds");
-            }
-            refresh_stats_btn.fire();
-        });
+    /**
+     * Updates the difficulty screen to match the current selection.
+     */
+    private void refreshDifficulty() {
+        DifficultyProfile p = DifficultyLoader.getProfile();
+        int potholes = 0;
+        for (int lane : p.getPotholes()) {
+            potholes += lane;
+        }
 
-        // Game Menu: Upgrade Wheels Button
-        upgrade_wheels_btn.setOnAction(value -> {
-            if (InputHandler.getTaxi() == null) {
-                return;
-            }
-            double cost = getWheelUpgradeCost();
-            if (InputHandler.getTaxi().getWallet() >= cost) {
-                InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
-                InputHandler.getTaxi().setPotHoleResistance(InputHandler.getTaxi().getPotholeResistance() + 1);
-            } else {
-                upgrade_wheels_btn.setText("Insufficient Funds");
-            }
-            refresh_stats_btn.fire();
-        });
+        // The chase drift is the number that actually decides how a difficulty feels, so it
+        // is spelled out rather than left for the player to discover the hard way.
+        String chase = p.getCleanDrift() < 0
+                ? "Clean driving pulls you away from the police."
+                : "The police gain on you even when you drive perfectly.";
 
-        // Game Menu: Purchase NOS Button
-        purchase_NOS_btn.setOnAction(value -> {
-            if (InputHandler.getTaxi() == null) {
-                return;
-            }
-            double cost = 100;
-            if (InputHandler.getTaxi().getWallet() >= cost) {
-                InputHandler.getTaxi().setWallet(InputHandler.getTaxi().getWallet() - cost);
-                InputHandler.getTaxi().setNOS(true);
-            } else {
-                purchase_NOS_btn.setText("Insufficient Funds");
-            }
-            refresh_stats_btn.fire();
-        });
+        difficultyText.setText(String.format(
+                "%s%n%n"
+                        + "Current difficulty: %s%n"
+                        + "  Potholes on the road:      %d%n"
+                        + "  Police start:              %.0fm behind%n"
+                        + "  Ground lost per pothole:   %.1fm per step%n"
+                        + "  People crossing the road:  %.0f%% of spawns%n"
+                        + "  Cost of running one down:  %.0fm handed to the police",
+                chase, difficulty.getLabel(), potholes, p.getPoliceStart(), p.getSlowGain(),
+                p.getJaywalkerChance() * 100, p.getSplatPenalty()));
 
-        // Game Menu: Start Game Button
-        start_game_btn.setOnAction(value -> {
-            stg.setScene(canvas_scene);
-            gc.initCanvas();
-            gc.runAnimator();
-        });
+        easyButton.setDisable(difficulty == EDifficulty.EASY);
+        mediumButton.setDisable(difficulty == EDifficulty.MEDIUM);
+        hardButton.setDisable(difficulty == EDifficulty.HARD);
+    }
 
-        // Main Menu: Start Game Button
-        start_btn.setOnAction(value -> {
-            if (InputHandler.getTaxi() != null) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                        "You already have a game started, would you like to start a new game?\nWARNING: This will overwrite your current save.");
-                alert.setTitle("New Game");
-                ButtonType ok = new ButtonType("Yes");
-                ButtonType cancel = new ButtonType("Cancel");
-                alert.getButtonTypes().setAll(ok, cancel);
-                alert.showAndWait().ifPresent(rs -> {
-                    if (rs == ok) {
-                        InputHandler.setTaxi(null);
-                        DifficultyLoader.loadDifficulty(getDifficultyFile());
-                        gc.initCanvas();
-                        upgrade_engine_btn.setDisable(true);
-                        upgrade_wheels_btn.setDisable(true);
-                        purchase_NOS_btn.setDisable(true);
-                        walletInfo.setText("");
-                        passengerInfo.setText("");
-                        stg.setScene(game_scene);
-                    } else {
-                        return;
-                    }
-                });
-            } else {
-                stg.setScene(game_scene);
-                DifficultyLoader.loadDifficulty(getDifficultyFile());
-                upgrade_engine_btn.setDisable(true);
-                upgrade_wheels_btn.setDisable(true);
-                purchase_NOS_btn.setDisable(true);
-                walletInfo.setText("");
-                passengerInfo.setText("");
-            }
-        });
+    // ------------------------------------------------------------------
+    // Small helpers
+    // ------------------------------------------------------------------
 
-        // Main Menu: Continue Game Button
-        continue_btn.setOnAction(value -> {
-            DifficultyLoader.loadDifficulty(getDifficultyFile());
-            stg.setScene(game_scene);
-        });
+    /**
+     * Adds a style class to a text node and returns it, so nodes can be styled inline.
+     *
+     * @param text       the node to style
+     * @param styleClass the CSS class to add
+     * @return the same node.
+     */
+    private static Text styled(Text text, String styleClass) {
+        text.getStyleClass().add(styleClass);
+        return text;
+    }
 
-        // Difficulty Menu: Back Button
-        back_diff_btn.setOnAction(value -> {
-            stg.setScene(menu_scene);
-        });
+    /**
+     * Builds a centred, evenly spaced vertical column.
+     *
+     * @param spacing gap between children, in pixels
+     * @param nodes   the children, top to bottom
+     * @return the assembled column.
+     */
+    private static VBox column(double spacing, javafx.scene.Node... nodes) {
+        VBox box = new VBox(spacing, nodes);
+        box.setAlignment(Pos.CENTER);
+        box.setPrefSize(WIDTH, HEIGHT);
+        return box;
+    }
 
-        // Difficulty Menu: Easy Button
-        easy_btn.setOnAction(value -> {
-            difficulty = EDifficulty.EASY;
-            difficulty_btn.fire();
-        });
+    /**
+     * Wraps a layout root in a stylesheet-carrying scene.
+     *
+     * @param root the scene root
+     * @return the assembled scene.
+     */
+    private static Scene scene(javafx.scene.Parent root) {
+        Scene built = new Scene(root, WIDTH, HEIGHT);
+        applyStylesheet(built);
+        return built;
+    }
 
-        // Difficulty Menu: Medium Button
-        medium_btn.setOnAction(value -> {
-            difficulty = EDifficulty.MEDIUM;
-            difficulty_btn.fire();
-        });
-
-        // Difficulty Menu: Hard Button
-        hard_btn.setOnAction(value -> {
-            difficulty = EDifficulty.HARD;
-            difficulty_btn.fire();
-        });
-
-        // Game Menu: Back Button
-        back_game_btn.setOnAction(value -> {
-            // Save the game.
-            if (save_game != null) {
-                TaxiSaver.setFile(save_game);
-                TaxiSaver.save(InputHandler.getTaxi());
-                stg.setScene(menu_scene);
-            } else {
-                if (InputHandler.getTaxi() == null) {
-                    stg.setScene(menu_scene);
-                    return;
-                }
-                Alert noSave = new Alert(Alert.AlertType.INFORMATION,
-                        "No save file selected.\nWould you like to create a new save file?\nIf no file is selected, the game will not be saved.");
-                noSave.setTitle("Save File");
-                ButtonType yes = new ButtonType("Yes");
-                ButtonType no = new ButtonType("No");
-                ButtonType cancel = new ButtonType("Cancel");
-                noSave.getButtonTypes().setAll(yes, no, cancel);
-                noSave.showAndWait().ifPresent(rs -> {
-                    if (rs == yes) {
-                        FileChooser fileChooser = new FileChooser();
-                        fileChooser.setTitle("Save Game Files");
-                        fileChooser.getExtensionFilters().addAll(
-                                new FileChooser.ExtensionFilter("Save Game Files", "*.sav"));
-                        try {
-                            fileChooser.setInitialDirectory(new File(".").getCanonicalFile());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        File selectedFile = fileChooser.showSaveDialog(stg);
-                        if (selectedFile != null) {
-                            TaxiSaver.setFile(selectedFile);
-                            TaxiSaver.save(InputHandler.getTaxi());
-                            save_game = selectedFile;
-                            stg.setScene(menu_scene);
-                            selectedFile_Text.setVisible(true);
-                            selectedFile_Text.setText("File Selected: " + selectedFile.getName());
-                            continue_btn.setDisable(false);
-                        }
-
-                    } else if (rs == no) {
-                        InputHandler.setTaxi(null);
-                        stg.setScene(menu_scene);
-                        return;
-                    } else if (rs == cancel) {
-                        return;
-                    }
-                });
-            }
-        });
-
-        // Main Menu: Difficulty Button
-        difficulty_btn.setOnAction(value -> {
-            if (difficulty == EDifficulty.EASY) {
-                difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Easy");
-                easy_btn.setDisable(true);
-                medium_btn.setDisable(false);
-                hard_btn.setDisable(false);
-            }
-            if (difficulty == EDifficulty.MEDIUM) {
-                difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Medium");
-                medium_btn.setDisable(true);
-                easy_btn.setDisable(false);
-                hard_btn.setDisable(false);
-
-            }
-            if (difficulty == EDifficulty.HARD) {
-                difficultyText.setText("Click the buttons below to change difficulty.\nCurrent Difficulty: Hard");
-                hard_btn.setDisable(true);
-                easy_btn.setDisable(false);
-                medium_btn.setDisable(false);
-            }
-            stg.setScene(difficulty_scene);
-        });
-
-        // Main Menu: Exit Button
-        exit_btn.setOnAction(value -> {
-            System.exit(0);
-        });
-
-        // Main Menu: Manual Button
-        manual_btn.setOnAction(value -> {
-            stg.setScene(instruct_scene);
-        });
-
-        // Manual Menu: Back Button
-        back_manual_btn.setOnAction(value -> {
-            stg.setScene(menu_scene);
-        });
-
-        // InputHandler setup.
-        InputHandler.setCanvas(gc);
-        InputHandler.setMainStage(stg);
-        InputHandler.setUpgradeScene(game_scene);
-
-        // Stage setup.
-        stg.setScene(menu_scene);
-        stg.setTitle("Taxi Racer V0.1");
-        stg.show();
-
+    /**
+     * Attaches the game stylesheet, if it can be found.
+     *
+     * @param target the scene to style
+     */
+    private static void applyStylesheet(Scene target) {
+        String css = Assets.url("res/style.css");
+        if (css != null) {
+            target.getStylesheets().add(css);
+        }
     }
 }
